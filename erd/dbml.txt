@@ -1,0 +1,63 @@
+Table person {
+    person_id uuid [pk]
+    name varchar [not null]
+    surname varchar [not null]
+    date_of_birth date [not null]
+    pesel char(11) [not null]
+    phone_number char(11) [not null]
+    address varchar [not null]
+}
+
+Table patient {
+    patient_id uuid [pk]
+    person_id uuid [ref: - person.person_id, unique]
+    date_of_admission date [not null]
+    date_of_discharge date
+    policy_number varchar [not null]
+    department_id uuid [ref: > department.department_id]
+
+}
+
+Table doctor {
+    doctor_id uuid [pk]
+    person_id uuid [ref: - person.person_id, unique]
+    specialization varchar [not null]
+    room varchar
+    work_start time [not null]
+    work_end time [not null]
+    department_id uuid [ref: > department.department_id]
+}
+
+Table appointment {
+    appointment_id uuid [pk]
+    doctor_id uuid [ref: > doctor.doctor_id]
+    date timestamp [not null]
+    status enum('scheduled', 'completed', 'canceled', 'no_show') [not null]
+    patient_id uuid [ref: > patient.patient_id]
+}
+
+Table department {
+    department_id uuid [pk]
+    name varchar [not null]
+    bed_count int [not null]
+    patients_count int [not null]
+    director_id uuid [ref: - doctor.doctor_id, unique]
+}
+
+Table prescription {
+    prescription_id uuid [pk]
+    drugs varchar [not null]
+    issue date [not null]
+    expiration date [not null]
+    notes text
+    appointment_id uuid [ref: > appointment.appointment_id]
+}
+
+Table medical_history {
+    history_id uuid [pk]
+    patient_id uuid [ref: - patient.patient_id, unique]
+    conditions varchar
+    treatments varchar
+    allergies varchar
+    notes text
+}
