@@ -34,7 +34,7 @@ CREATE TABLE "patient" (
     "date_of_admission" DATE NOT NULL,
     "date_of_discharge" DATE NULL,
     "policy_number" VARCHAR NOT NULL,
-    "conditions" VARCHAR NULL,
+    "conditions" VARCHAR[] NULL,
     "notes" TEXT NULL,
     "department_id" UUID NULL,
     CONSTRAINT "pk_patient" PRIMARY KEY ("patient_id"),
