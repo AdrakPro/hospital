@@ -6,7 +6,7 @@ export default defineConfig({
     globals: false,
     environment: "node",
     include: ["src/features/**/*.test.{js,ts}"],
-    setupFiles: ["src/tests/setupTests.js"],
+    setupFiles: ["src/config/setupTests.js"],
     reporters: ["verbose"],
     coverage: {
       reporter: ["text", "lcov"],
@@ -19,6 +19,7 @@ export default defineConfig({
       "@person": path.resolve(__dirname, "./src/features/person"),
       "@patient": path.resolve(__dirname, "./src/features/patient"),
       "@db": path.resolve(__dirname, "./src/db"),
+      "@common": path.resolve(__dirname, "./src/features/common"),
     },
   },
 });

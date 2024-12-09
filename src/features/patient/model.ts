@@ -1,4 +1,6 @@
-interface Patient {
+import { Person } from "@person/model";
+
+export interface Patient {
   patientId: string;
   personId: string;
   dateOfAdmission: Date;

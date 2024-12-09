@@ -1,4 +1,6 @@
-interface Person {
+import { Patient } from "@patient/model";
+
+export interface Person {
   personId: string;
   name: string;
   surname: string;
@@ -13,7 +15,7 @@ interface Person {
   patient?: Patient;
 }
 
-enum PersonRole {
+export enum PersonRole {
   PATIENT,
   DOCTOR,
   DIRECTOR,

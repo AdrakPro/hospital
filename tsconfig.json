@@ -34,6 +34,7 @@
       "@person/*": ["src/features/person/*"],
       "@patient/*": ["src/features/patient/*"],
       "@db/*": ["src/db/*"],
+      "@common/*": ["/src/features/common/*"]
     } /* Specify a set of entries that re-map imports to additional lookup locations. */,
     "rootDir": "./src/" /* Specify the root folder within your source files. */,
     // "rootDirs": [] /* Allow multiple folders to be treated as one when resolving modules. */,
