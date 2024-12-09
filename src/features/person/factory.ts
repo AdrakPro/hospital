@@ -1,21 +1,17 @@
-import { v4 as uuid } from "uuid";
+import { CreatePersonDTO } from "@person/dto";
 
-export const createPerson = (overrides = {}) => {
-  const defaultPerson = {
-    personId: uuid(),
-    name: "John",
-    surname: "Doe",
-    dateOfBirth: new Date("1980-01-01"),
-    phoneNumber: "12345678901",
-    address: "123 Elm Street",
-    username: "john_doe",
-    passwordHash: "securepassword",
-    role: null,
-    auditLogs: [],
-    doctor: undefined,
-    patient: undefined,
-  };
+export function createPersonDTO(
+  overrides?: Partial<CreatePersonDTO>,
+): CreatePersonDTO {
+  const person = new CreatePersonDTO();
 
-  // Combine the default values with any overrides provided
-  return { ...defaultPerson, ...overrides };
-};
+  person.name = overrides?.name ?? "John";
+  person.surname = overrides?.surname ?? "Doe";
+  person.dateOfBirth = overrides?.dateOfBirth ?? "1980-01-01";
+  person.phoneNumber = overrides?.phoneNumber ?? "+48793921111";
+  person.address = overrides?.address ?? "123 Elm Street";
+  person.username = overrides?.username ?? "john_doe";
+  person.role = overrides?.role ?? undefined;
+
+  return person;
+}

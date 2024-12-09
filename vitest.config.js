@@ -3,7 +3,7 @@ import path from "path";
 
 export default defineConfig({
   test: {
-    globals: false,
+    globals: true,
     environment: "node",
     include: ["src/features/**/*.test.{js,ts}"],
     setupFiles: ["src/config/setupTests.js"],
