@@ -19,5 +19,5 @@ export const createPatient = (overrides = {}) => {
   };
 
   // Combine the default values with any overrides provided
-  return { ...defaultPerson, ...overrides };
+  return { ...defaultPatient, ...overrides };
 };
