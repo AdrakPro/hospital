@@ -53,7 +53,7 @@ describe("Person Service", () => {
 
         prismaMock.person.findUnique.mockResolvedValue(person);
 
-        const result = await service.readPerson(personId);
+        const result = await service.getPersonByUsername(personId);
 
         expect(result).toEqual(person);
         expect(prismaMock.person.findUnique).toHaveBeenCalledWith({
@@ -66,7 +66,7 @@ describe("Person Service", () => {
 
         prismaMock.person.findUnique.mockResolvedValue(null);
 
-        const result = await service.readPerson(personId);
+        const result = await service.getPersonByUsername(personId);
 
         expect(result).toBeNull();
         expect(prismaMock.person.findUnique).toHaveBeenCalledWith({
