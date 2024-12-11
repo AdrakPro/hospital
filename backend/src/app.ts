@@ -5,9 +5,9 @@ import { errorMiddleware } from "@common/middlewares/errorMiddleware";
 
 const app = express();
 
-app.use("/api", personRouter);
+app.use(express.json({ limit: "5kb" }));
 
-app.use(express.json());
+app.use("/api", personRouter);
 
 app.use(errorMiddleware);
 
