@@ -2,12 +2,13 @@ import {
   IsDateString,
   IsEnum,
   IsNotEmpty,
+  IsNumberString,
   IsOptional,
-  IsPhoneNumber,
   IsString,
+  Length,
   MaxLength,
 } from "class-validator";
-import { PersonRole } from "@person/model";
+import { PersonRole } from "@prisma/client";
 
 export class CreatePersonDTO {
   @IsNotEmpty()
@@ -22,11 +23,16 @@ export class CreatePersonDTO {
 
   @IsNotEmpty()
   @IsDateString()
-  dateOfBirth: string;
+  dateOfBirth: Date;
 
   @IsNotEmpty()
-  @IsPhoneNumber()
+  @IsNumberString()
+  @Length(11, 11)
   phoneNumber: string;
+
+  @IsString()
+  @Length(8, 32)
+  password: string;
 
   @IsNotEmpty()
   @IsString()
@@ -40,5 +46,5 @@ export class CreatePersonDTO {
 
   @IsEnum(PersonRole)
   @IsOptional()
-  role?: PersonRole;
+  role: PersonRole | null;
 }

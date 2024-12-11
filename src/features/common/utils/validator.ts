@@ -1,7 +1,6 @@
-import { validate } from "class-validator";
-import { ValidationError } from "class-validator";
+import { validate, ValidationError } from "class-validator";
 
-export async function validateDto<T extends object>(
+export async function validateDTO<T extends object>(
   dto: T,
 ): Promise<ValidationError[]> {
   const errors = await validate(dto);
@@ -11,4 +10,8 @@ export async function validateDto<T extends object>(
   }
 
   return errors;
+}
+
+export function hasUndefinedField(obj: Record<string, any>) {
+  return Object.values(obj).every((v) => v === undefined);
 }
