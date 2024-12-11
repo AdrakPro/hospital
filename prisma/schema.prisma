@@ -72,11 +72,11 @@ model Person {
   name         String       @db.VarChar
   surname      String       @db.VarChar
   dateOfBirth  DateTime     @map("date_of_birth") @db.Date
-  phoneNumber  String       @map("phone_number") @db.Char(11)
+  phoneNumber  String       @map("phone_number") @db.Char(12)
   address      String       @db.VarChar
   username     String       @unique @map("username") @db.VarChar
-  passwordHash String       @map("password_hash") @db.VarChar
-  role         PersonRole
+  password     String       @map("password_hash") @db.VarChar
+  role         PersonRole?
   auditLogs    AuditLog[]
   doctor       Doctor?
   patient      Patient?
