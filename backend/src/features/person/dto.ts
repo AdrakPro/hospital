@@ -55,8 +55,54 @@ export class ReadPersonDTO {
   surname: string;
   dateOfBirth: Date;
   phoneNumber: string;
-  password: string;
   address: string;
   username: string;
   role: PersonRole | null;
+}
+
+export class UpdatePersonDTO {
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(50)
+  name?: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(50)
+  surname?: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsDateString()
+  dateOfBirth?: Date;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsNumberString()
+  @Length(11, 11)
+  phoneNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(8, 32)
+  password?: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(50)
+  address?: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(25)
+  username?: string;
+
+  @IsOptional()
+  @IsEnum(PersonRole)
+  @IsOptional()
+  role?: PersonRole | null;
 }

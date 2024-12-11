@@ -12,4 +12,18 @@ personRouter.post(
   },
 );
 
+personRouter.get(
+  "/person/:personId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    await personController.getPerson(req, res, next);
+  },
+);
+
+personRouter.patch(
+  "/person/:personId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    await personController.updatePersonInfo(req, res, next);
+  },
+);
+
 export default personRouter;
