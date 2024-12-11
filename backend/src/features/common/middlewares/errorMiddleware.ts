@@ -16,7 +16,17 @@ export const errorMiddleware = (
   };
 
   if (e.errors) {
-    Object.assign(errorBody, { ...errorBody, errors: e.errors });
+    Object.assign(errorBody, {
+      ...errorBody,
+      errors: e.errors,
+    });
+  }
+
+  if (e.details) {
+    Object.assign(errorBody, {
+      ...errorBody,
+      details: e.details,
+    });
   }
 
   res.status(e.statusCode).json({
