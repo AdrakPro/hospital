@@ -8,4 +8,4 @@ const prisma = new PrismaClient({
   },
 });
 
-export { prisma };
+export default prisma;
