@@ -20,6 +20,11 @@ export default defineConfig({
       "@patient": path.resolve(__dirname, "./src/features/patient"),
       "@db": path.resolve(__dirname, "./src/db"),
       "@common": path.resolve(__dirname, "./src/features/common"),
+      "@prescription": path.resolve(__dirname, "./src/features/prescription"),
+      "@doctor": path.resolve(__dirname, "./src/features/doctor"),
+      "@department": path.resolve(__dirname, "./src/features/department"),
+      "@audit_log": path.resolve(__dirname, "./src/features/audit_log"),
+      "@appointment": path.resolve(__dirname, "./src/features/appointment"),
     },
   },
 });
