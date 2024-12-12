@@ -2,7 +2,7 @@ export class HttpException extends Error {
   message: string;
   statusCode: number;
   details?: string;
-  errors: any;
+  errors?: any;
 
   constructor(statusCode: number, details?: string, errors?: any) {
     let message;
@@ -20,11 +20,14 @@ export class HttpException extends Error {
       case ErrorCode.INTERNAL_SERVER_ERROR:
         message = "An unexpected error occurred on the server.";
         break;
+      default:
+        message = "An unexpected error occurred. Add error to HttpException!";
+        break;
     }
 
     super(message);
     this.statusCode = statusCode;
-    this.errors = errors || null;
+    this.errors = errors;
     this.details = details;
   }
 }

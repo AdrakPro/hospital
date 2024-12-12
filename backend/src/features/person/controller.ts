@@ -56,7 +56,7 @@ export class PersonController {
 
   async updatePersonInfo(req: Request, res: Response, next: NextFunction) {
     const transformedPerson = plainToInstance(UpdatePersonDTO, req.body);
-    const errors = await validate(transformedPerson); // tu error
+    const errors = await validate(transformedPerson);
 
     if (errors.length > 0) {
       next(new HttpException(ErrorCode.BAD_REQUEST, undefined, errors));
