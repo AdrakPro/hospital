@@ -4,6 +4,7 @@ import { validate } from "class-validator";
 import { plainToInstance } from "class-transformer";
 import { CreatePersonDTO, UpdatePersonDTO } from "@person/dto";
 import { ErrorCode, HttpException } from "@common/errors/httpException";
+import { sendSuccessResponse } from "@common/utils/sendSuccessResponse";
 
 export class PersonController {
   private personService: PersonService;
@@ -14,7 +15,7 @@ export class PersonController {
 
   // TODO: sending name="" is not empty, but not actual name
   async createPerson(req: Request, res: Response, next: NextFunction) {
-    const transformedPerson = plainToInstance(CreatePersonDTO, req.query);
+    const transformedPerson = plainToInstance(CreatePersonDTO, req.body);
     const errors = await validate(transformedPerson);
 
     if (errors.length > 0) {
@@ -35,7 +36,7 @@ export class PersonController {
       }
 
       const person = await this.personService.createPerson(transformedPerson);
-      res.status(201).json({ person });
+      await sendSuccessResponse(res, 201, { person });
     } catch (e: any) {
       next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR));
     }
@@ -50,7 +51,7 @@ export class PersonController {
         next(new HttpException(ErrorCode.NOT_FOUND));
       }
 
-      res.status(200).json(fetchedPerson);
+      await sendSuccessResponse(res, 200, { fetchedPerson });
     } catch (e: any) {
       next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
     }
@@ -71,7 +72,7 @@ export class PersonController {
     try {
       await this.personService.updatePerson(personId, sanitizedData);
 
-      res.status(200).json(sanitizedData);
+      await sendSuccessResponse(res, 200, { sanitizedData });
     } catch (e: any) {
       next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
     }

@@ -7,6 +7,7 @@ import {
   IsString,
   Length,
   MaxLength,
+  MinLength,
 } from "class-validator";
 import { PersonRole } from "@prisma/client";
 
@@ -27,7 +28,8 @@ export class CreatePersonDTO {
 
   @IsNotEmpty()
   @IsNumberString()
-  @Length(11, 11)
+  @MinLength(11)
+  @MaxLength(11)
   phoneNumber: string;
 
   @IsString()

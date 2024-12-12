@@ -1,7 +1,7 @@
 import express from "express";
-import personRouter from "@person/router";
 import * as process from "node:process";
 import { errorMiddleware } from "@common/middlewares/errorMiddleware";
+import personRouter from "@person/router";
 import prescriptionRouter from "@prescription/router";
 
 const app = express();
