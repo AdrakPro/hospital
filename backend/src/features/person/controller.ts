@@ -3,7 +3,7 @@ import { PersonService } from "@person/service";
 import { validate } from "class-validator";
 import { plainToInstance } from "class-transformer";
 import { CreatePersonDTO, UpdatePersonDTO } from "@person/dto";
-import { ErrorCode, HttpException } from "@common/errors/HttpException";
+import { ErrorCode, HttpException } from "@common/errors/httpException";
 
 export class PersonController {
   private personService: PersonService;
@@ -27,7 +27,9 @@ export class PersonController {
       );
 
       if (fetchedPerson) {
-        next(new HttpException(ErrorCode.CONFLICT));
+        next(
+          new HttpException(ErrorCode.CONFLICT, "Duplicate username field."),
+        );
 
         return null;
       }
@@ -43,7 +45,7 @@ export class PersonController {
     try {
       const { personId } = req.params;
       const fetchedPerson = await this.personService.getPersonById(personId);
-      console.log(fetchedPerson);
+
       if (!fetchedPerson) {
         next(new HttpException(ErrorCode.NOT_FOUND));
       }
