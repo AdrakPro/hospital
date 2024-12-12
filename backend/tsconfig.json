@@ -60,10 +60,10 @@
       "@department/*": [
         "src/features/department/*"
       ],
-      "@audit_logs/*": [
-        "src/features/audit_log/*"
+      "@auditLog/*": [
+        "src/features/auditLog/*"
       ],
-      "@appointment": [
+      "@appointment/*": [
         "src/features/appointment/*"
       ]
     }

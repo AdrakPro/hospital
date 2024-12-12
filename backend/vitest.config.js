@@ -23,7 +23,7 @@ export default defineConfig({
       "@prescription": path.resolve(__dirname, "./src/features/prescription"),
       "@doctor": path.resolve(__dirname, "./src/features/doctor"),
       "@department": path.resolve(__dirname, "./src/features/department"),
-      "@audit_log": path.resolve(__dirname, "./src/features/audit_log"),
+      "@auditLog": path.resolve(__dirname, "./src/features/auditLog"),
       "@appointment": path.resolve(__dirname, "./src/features/appointment"),
     },
   },
