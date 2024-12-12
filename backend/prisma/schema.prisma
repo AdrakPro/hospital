@@ -20,11 +20,11 @@ model Appointment {
 
 model AuditLog {
   logId     String      @id @default(uuid()) @map("log_id") @db.Uuid
-  userId    String      @map("user_id") @db.Uuid
+  personId  String      @map("user_id") @db.Uuid
   timestamp DateTime    @default(now()) @db.Timestamp(6)
   action    AuditAction
-  log       String
-  person    Person      @relation(fields: [userId], references: [personId], onDelete: NoAction, onUpdate: NoAction, map: "fk_audit_log_user_id")
+  log       String      @db.Text
+  person    Person      @relation(fields: [personId], references: [personId], onDelete: NoAction, onUpdate: NoAction, map: "fk_audit_log_user_id")
 }
 
 model Department {
@@ -60,7 +60,7 @@ model Patient {
   dateOfDischarge DateTime?     @map("date_of_discharge") @db.Date
   policyNumber    String        @map("policy_number") @db.VarChar
   conditions      String[]
-  notes           String?
+  notes           String?       @db.Text
   departmentId    String?       @map("department_id") @db.Uuid
   appointments    Appointment[]
   department      Department?   @relation(fields: [departmentId], references: [departmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_patient_department_id")
@@ -87,7 +87,7 @@ model Prescription {
   drugs          String[]           @db.VarChar
   issue          DateTime           @db.Date
   expiration     DateTime           @db.Date
-  notes          String?
+  notes          String?            @db.Text
   status         PrescriptionStatus
   appointmentId  String             @map("appointment_id") @db.Uuid
   appointment    Appointment        @relation(fields: [appointmentId], references: [appointmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_prescription_appointment_id")
