@@ -2,12 +2,13 @@ import express from "express";
 import personRouter from "@person/router";
 import * as process from "node:process";
 import { errorMiddleware } from "@common/middlewares/errorMiddleware";
+import prescriptionRouter from "@prescription/router";
 
 const app = express();
 
 app.use(express.json({ limit: "5kb" }));
 
-app.use("/api", personRouter);
+app.use("/api", personRouter, prescriptionRouter);
 
 app.use(errorMiddleware);
 

@@ -8,27 +8,27 @@ datasource db {
 }
 
 model Appointment {
-  appointmentId String          @id @map("appointment_id") @db.Uuid @default(uuid())
-  patientId     String          @map("patient_id") @db.Uuid
-  date          DateTime        @db.Timestamp(6)
+  appointmentId String            @id @default(uuid()) @map("appointment_id") @db.Uuid
+  patientId     String            @map("patient_id") @db.Uuid
+  date          DateTime          @db.Timestamp(6)
   status        AppointmentStatus
-  doctorId      String          @map("doctor_id") @db.Uuid
-  doctor        Doctor          @relation(fields: [doctorId], references: [doctorId], onDelete: NoAction, onUpdate: NoAction, map: "fk_appointment_doctor_id")
-  patient       Patient         @relation(fields: [patientId], references: [patientId], onDelete: NoAction, onUpdate: NoAction, map: "fk_appointment_patient_id")
+  doctorId      String            @map("doctor_id") @db.Uuid
+  doctor        Doctor            @relation(fields: [doctorId], references: [doctorId], onDelete: NoAction, onUpdate: NoAction, map: "fk_appointment_doctor_id")
+  patient       Patient           @relation(fields: [patientId], references: [patientId], onDelete: NoAction, onUpdate: NoAction, map: "fk_appointment_patient_id")
   prescriptions Prescription[]
 }
 
 model AuditLog {
-  logId     String     @id @map("log_id") @db.Uuid @default(uuid())
-  userId    String     @map("user_id") @db.Uuid
-  timestamp DateTime   @db.Timestamp(6) @default(now())
+  logId     String      @id @default(uuid()) @map("log_id") @db.Uuid
+  userId    String      @map("user_id") @db.Uuid
+  timestamp DateTime    @default(now()) @db.Timestamp(6)
   action    AuditAction
   log       String
-  person    Person     @relation(fields: [userId], references: [personId], onDelete: NoAction, onUpdate: NoAction, map: "fk_audit_log_user_id")
+  person    Person      @relation(fields: [userId], references: [personId], onDelete: NoAction, onUpdate: NoAction, map: "fk_audit_log_user_id")
 }
 
 model Department {
-  departmentId String    @id @map("department_id") @db.Uuid @default(uuid())
+  departmentId String    @id @default(uuid()) @map("department_id") @db.Uuid
   name         String    @db.VarChar
   bedCount     Int       @map("bed_count")
   patientCount Int       @map("patient_count")
@@ -40,56 +40,62 @@ model Department {
 }
 
 model Doctor {
-  doctorId      String      @id @map("doctor_id") @db.Uuid @default(uuid())
-  personId      String      @unique @map("person_id") @db.Uuid
-  departmentId  String?     @map("department_id") @db.Uuid
-  specialization String     @db.VarChar
-  room           String?    @db.VarChar
-  workStart      DateTime   @map("work_start") @db.Time(6)
-  workEnd        DateTime   @map("work_end") @db.Time(6)
+  doctorId       String        @id @default(uuid()) @map("doctor_id") @db.Uuid
+  personId       String        @unique @map("person_id") @db.Uuid
+  departmentId   String?       @map("department_id") @db.Uuid
+  specialization String        @db.VarChar
+  room           String?       @db.VarChar
+  workStart      DateTime      @map("work_start") @db.Time(6)
+  workEnd        DateTime      @map("work_end") @db.Time(6)
   appointments   Appointment[]
-  director       Department? @relation("departmentDirector")
-  department     Department? @relation("departmentDoctors", fields: [departmentId], references: [departmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_doctor_department_id")
-  person         Person      @relation(fields: [personId], references: [personId], onDelete: NoAction, onUpdate: NoAction, map: "fk_doctor_person_id")
+  director       Department?   @relation("departmentDirector")
+  department     Department?   @relation("departmentDoctors", fields: [departmentId], references: [departmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_doctor_department_id")
+  person         Person        @relation(fields: [personId], references: [personId], onDelete: NoAction, onUpdate: NoAction, map: "fk_doctor_person_id")
 }
 
 model Patient {
-  patientId        String       @id @map("patient_id") @db.Uuid @default(uuid())
-  personId         String       @unique @map("person_id") @db.Uuid
-  dateOfAdmission  DateTime     @map("date_of_admission") @db.Date
-  dateOfDischarge  DateTime?    @map("date_of_discharge") @db.Date
-  policyNumber     String       @map("policy_number") @db.VarChar
-  conditions       String[]
-  notes            String?
-  departmentId     String?      @map("department_id") @db.Uuid
-  appointments     Appointment[]
-  department       Department?  @relation(fields: [departmentId], references: [departmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_patient_department_id")
-  person           Person       @relation(fields: [personId], references: [personId], onDelete: NoAction, onUpdate: NoAction, map: "fk_patient_person_id")
+  patientId       String        @id @default(uuid()) @map("patient_id") @db.Uuid
+  personId        String        @unique @map("person_id") @db.Uuid
+  dateOfAdmission DateTime      @map("date_of_admission") @db.Date
+  dateOfDischarge DateTime?     @map("date_of_discharge") @db.Date
+  policyNumber    String        @map("policy_number") @db.VarChar
+  conditions      String[]
+  notes           String?
+  departmentId    String?       @map("department_id") @db.Uuid
+  appointments    Appointment[]
+  department      Department?   @relation(fields: [departmentId], references: [departmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_patient_department_id")
+  person          Person        @relation(fields: [personId], references: [personId], onDelete: NoAction, onUpdate: NoAction, map: "fk_patient_person_id")
 }
 
 model Person {
-  personId     String       @id @map("person_id") @db.Uuid @default(uuid())
-  name         String       @db.VarChar
-  surname      String       @db.VarChar
-  dateOfBirth  DateTime     @map("date_of_birth") @db.Date
-  phoneNumber  String       @map("phone_number") @db.Char(12)
-  address      String       @db.VarChar
-  username     String       @unique @map("username") @db.VarChar
-  password     String       @map("password_hash") @db.VarChar
-  role         PersonRole?
-  auditLogs    AuditLog[]
-  doctor       Doctor?
-  patient      Patient?
+  personId    String      @id @default(uuid()) @map("person_id") @db.Uuid
+  name        String      @db.VarChar
+  surname     String      @db.VarChar
+  dateOfBirth DateTime    @map("date_of_birth") @db.Date
+  phoneNumber String      @map("phone_number") @db.Char(12)
+  address     String      @db.VarChar
+  username    String      @unique @map("username") @db.VarChar
+  password    String      @map("password_hash") @db.VarChar
+  role        PersonRole?
+  auditLogs   AuditLog[]
+  doctor      Doctor?
+  patient     Patient?
 }
 
 model Prescription {
-  prescriptionId String       @id @map("prescription_id") @db.Uuid @default(uuid())
-  drugs          String       @db.VarChar
-  issue          DateTime     @db.Date
-  expiration     DateTime     @db.Date
+  prescriptionId String             @id @default(uuid()) @map("prescription_id") @db.Uuid
+  drugs          String[]           @db.VarChar
+  issue          DateTime           @db.Date
+  expiration     DateTime           @db.Date
   notes          String?
-  appointmentId  String       @map("appointment_id") @db.Uuid
-  appointment    Appointment  @relation(fields: [appointmentId], references: [appointmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_prescription_appointment_id")
+  status         PrescriptionStatus
+  appointmentId  String             @map("appointment_id") @db.Uuid
+  appointment    Appointment        @relation(fields: [appointmentId], references: [appointmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_prescription_appointment_id")
+}
+
+enum PrescriptionStatus {
+  ACTIVE
+  ARCHIVED
 }
 
 enum AppointmentStatus {
