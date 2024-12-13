@@ -2,16 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import { PatientService } from "@patient/service";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
-import {
-  CreatePatientDTO,
-  DeletePatientDTO,
-  UpdatePatientDTO,
-} from "@patient/dto";
+import { CreatePatientDTO, DeletePatientDTO, UpdatePatientDTO } from "@patient/dto";
 import { ErrorCode, HttpException } from "@common/errors/httpException";
-import {
-  sendSuccessResponse,
-  SuccessCode,
-} from "@common/utils/sendSuccessResponse";
+import { sendSuccessResponse, SuccessCode } from "@common/utils/sendSuccessResponse";
 
 export class PatientController {
   private patientService: PatientService;
@@ -36,7 +29,21 @@ export class PatientController {
     }
   }
 
-  async getPatient(req: Request, res: Response, next: NextFunction) {
+  async getAllPatients(req: Request, res: Response, next: NextFunction) {
+    try {
+      const patients = await this.patientService.getAllPatients();
+
+      if (patients.length === 0) {
+        return next(new HttpException(ErrorCode.NOT_FOUND));
+      }
+
+      await sendSuccessResponse(res, SuccessCode.OK, { patients });
+    } catch (e: any) {
+      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+    }
+  }
+
+  async getPatientById(req: Request, res: Response, next: NextFunction) {
     const { patientId } = req.params;
 
     try {
@@ -53,7 +60,6 @@ export class PatientController {
   }
 
   async updatePatient(req: Request, res: Response, next: NextFunction) {
-    const { patientId } = req.params;
     const updatePatientDTO = plainToInstance(UpdatePatientDTO, req.body);
     const errors = await validate(updatePatientDTO);
 
@@ -62,14 +68,8 @@ export class PatientController {
     }
 
     try {
-      const updatedPatient = await this.patientService.updatePatient(
-        patientId,
-        updatePatientDTO,
-      );
-
-      await sendSuccessResponse(res, SuccessCode.OK, {
-        patient: updatedPatient,
-      });
+      const patient = await this.patientService.updatePatient(updatePatientDTO);
+      await sendSuccessResponse(res, SuccessCode.OK, { patient });
     } catch (e: any) {
       next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
     }

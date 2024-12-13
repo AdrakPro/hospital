@@ -64,7 +64,7 @@ model Patient {
   departmentId    String?       @map("department_id") @db.Uuid
   appointments    Appointment[]
   department      Department?   @relation(fields: [departmentId], references: [departmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_patient_department_id")
-  person          Person        @relation(fields: [personId], references: [personId], onDelete: NoAction, onUpdate: NoAction, map: "fk_patient_person_id")
+  person          Person        @relation(fields: [personId], references: [personId], onDelete: Cascade, onUpdate: NoAction, map: "fk_patient_person_id")
 }
 
 model Person {

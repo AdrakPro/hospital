@@ -1,10 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { PersonRole, PrismaClient } from "@prisma/client";
 import prisma from "@db/prisma";
-import {
-  CreatePatientDTO,
-  ReadPatientDTO,
-  UpdatePatientDTO,
-} from "@patient/dto";
+import { CreatePatientDTO, ReadPatientDTO, UpdatePatientDTO } from "@patient/dto";
 
 export class PatientService {
   private db: PrismaClient;
@@ -14,9 +10,20 @@ export class PatientService {
   }
 
   async createPatient(patientDTO: CreatePatientDTO): Promise<ReadPatientDTO> {
-    return this.db.patient.create({
-      data: patientDTO,
+    return this.db.$transaction(async (tx) => {
+      await tx.person.update({
+        where: { personId: patientDTO.personId },
+        data: { role: PersonRole.PATIENT },
+      });
+
+      return tx.patient.create({
+        data: patientDTO,
+      });
     });
+  }
+
+  async getAllPatients(): Promise<ReadPatientDTO[]> {
+    return this.db.patient.findMany();
   }
 
   async getPatientById(patientId: string): Promise<ReadPatientDTO | null> {
@@ -27,9 +34,10 @@ export class PatientService {
   }
 
   async updatePatient(
-    patientId: string,
     updateData: UpdatePatientDTO,
   ): Promise<ReadPatientDTO> {
+    const { patientId } = updateData;
+
     return this.db.patient.update({
       where: { patientId },
       data: updateData,

@@ -35,6 +35,10 @@ export class CreatePatientDTO {
 
 export class UpdatePatientDTO {
   @IsNotEmpty()
+  @IsUUID("4")
+  patientId: string;
+
+  @IsNotEmpty()
   @IsOptional()
   @IsDateString()
   dateOfDischarge?: Date;
