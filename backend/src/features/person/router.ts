@@ -6,7 +6,7 @@ const personRouter = Router();
 const personController = new PersonController(new PersonService());
 
 personRouter.post(
-  "/persons",
+  "/person",
   async (req: Request, res: Response, next: NextFunction) => {
     await personController.createPerson(req, res, next);
   },
