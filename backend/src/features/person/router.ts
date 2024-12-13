@@ -19,7 +19,7 @@ personRouter.get(
   },
 );
 
-personRouter.patch(
+ personRouter.put(
   "/person/:personId",
   async (req: Request, res: Response, next: NextFunction) => {
     await personController.updatePersonInfo(req, res, next);
