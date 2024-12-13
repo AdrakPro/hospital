@@ -45,12 +45,12 @@ model Doctor {
   departmentId   String?       @map("department_id") @db.Uuid
   specialization String        @db.VarChar
   room           String?       @db.VarChar
-  workStart      DateTime      @map("work_start") @db.Time(6)
-  workEnd        DateTime      @map("work_end") @db.Time(6)
+  workStart      String        @map("work_start") @db.VarChar(5)
+  workEnd        String        @map("work_end") @db.VarChar(5)
   appointments   Appointment[]
   director       Department?   @relation("departmentDirector")
   department     Department?   @relation("departmentDoctors", fields: [departmentId], references: [departmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_doctor_department_id")
-  person         Person        @relation(fields: [personId], references: [personId], onDelete: NoAction, onUpdate: NoAction, map: "fk_doctor_person_id")
+  person         Person        @relation(fields: [personId], references: [personId], onDelete: Cascade, onUpdate: NoAction, map: "fk_doctor_person_id")
 }
 
 model Patient {
