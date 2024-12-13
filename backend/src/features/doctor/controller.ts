@@ -4,10 +4,7 @@ import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { CreateDoctorDTO, DeleteDoctorDTO, UpdateDoctorDTO } from "@doctor/dto";
 import { ErrorCode, HttpException } from "@common/errors/httpException";
-import {
-  sendSuccessResponse,
-  SuccessCode,
-} from "@common/utils/sendSuccessResponse";
+import { sendSuccessResponse, SuccessCode } from "@common/utils/sendSuccessResponse";
 
 export class DoctorController {
   private doctorService: DoctorService;
@@ -35,6 +32,21 @@ export class DoctorController {
       next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
     }
   }
+
+  async getAllDoctors(req: Request, res: Response, next: NextFunction) {
+    try {
+      const doctors = await this.doctorService.getAllDoctors();
+
+      if (doctors?.length === 0) {
+        next(new HttpException(ErrorCode.NOT_FOUND));
+      }
+
+      await sendSuccessResponse(res, SuccessCode.OK, { doctors });
+    } catch (e: any) {
+      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+    }
+  }
+
 
   async getDoctorById(req: Request, res: Response, next: NextFunction) {
     const { doctorId } = req.params;

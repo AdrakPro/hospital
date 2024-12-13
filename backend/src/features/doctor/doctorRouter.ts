@@ -6,11 +6,19 @@ const doctorRouter = express.Router();
 const doctorController = new DoctorController(new DoctorService());
 
 doctorRouter.get(
+  "/doctors",
+  async (req: Request, res: Response, next: NextFunction) => {
+    await doctorController.getAllDoctors(req, res, next);
+  },
+);
+
+doctorRouter.get(
   "/doctor/:doctorId",
   async (req: Request, res: Response, next: NextFunction) => {
     await doctorController.getDoctorById(req, res, next);
   },
 );
+
 doctorRouter.post(
   "/doctor/:personId",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -18,14 +26,13 @@ doctorRouter.post(
   },
 );
 
-// w PUT musimy podac cale entity i jezeli raz sie wykona to kolejny rz juz nie, w patch caly czas zmieniamy poszczegolne pola
 doctorRouter.put(
   "/doctor/:doctorId",
   async (req: Request, res: Response, next: NextFunction) => {
     await doctorController.updateDoctor(req, res, next);
   },
 );
-// kaskadowe?
+
 doctorRouter.delete(
   "/doctor/:doctorId",
   async (req: Request, res: Response, next: NextFunction) => {

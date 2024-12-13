@@ -34,6 +34,10 @@ export class DoctorService {
     });
   }
 
+  async getAllDoctors(): Promise<ReadDoctorDTO[] | null> {
+    return this.db.doctor.findMany();
+  }
+
   async updateDoctor(
     doctorId: string,
     updateData: UpdateDoctorDTO,

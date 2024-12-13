@@ -1,10 +1,4 @@
-import {
-  IsMilitaryTime,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from "class-validator";
+import { IsMilitaryTime, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreateDoctorDTO {
   @IsNotEmpty()
