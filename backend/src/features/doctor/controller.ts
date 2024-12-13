@@ -17,7 +17,11 @@ export class DoctorController {
   }
 
   async createDoctor(req: Request, res: Response, next: NextFunction) {
-    const doctorDTO = plainToInstance(CreateDoctorDTO, req.body);
+    const { personId } = req.params;
+    const doctorDTO = plainToInstance(CreateDoctorDTO, {
+      ...req.body,
+      personId,
+    });
     const errors = await validate(doctorDTO);
 
     if (errors.length > 0) {
@@ -32,7 +36,7 @@ export class DoctorController {
     }
   }
 
-  async getDoctor(req: Request, res: Response, next: NextFunction) {
+  async getDoctorById(req: Request, res: Response, next: NextFunction) {
     const { doctorId } = req.params;
 
     try {
