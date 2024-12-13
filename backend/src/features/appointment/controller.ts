@@ -21,7 +21,12 @@ export class AppointmentController {
   }
 
   async createAppointment(req: Request, res: Response, next: NextFunction) {
-    const appointmentDTO = plainToInstance(CreateAppointmentDTO, req.body);
+    const { doctorId, patientId } = req.params;
+    const appointmentDTO = plainToInstance(CreateAppointmentDTO, {
+      ...req.body,
+      doctorId,
+      patientId,
+    });
     const errors = await validate(appointmentDTO);
 
     if (errors.length > 0) {
