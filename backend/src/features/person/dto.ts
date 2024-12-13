@@ -5,6 +5,7 @@ import {
   IsNumberString,
   IsOptional,
   IsString,
+  IsUUID,
   Length,
   MaxLength,
   MinLength,
@@ -63,6 +64,10 @@ export class ReadPersonDTO {
 }
 
 export class UpdatePersonDTO {
+  @IsNotEmpty()
+  @IsUUID("4")
+  personId: string;
+
   @IsOptional()
   @IsNotEmpty()
   @IsString()
@@ -87,24 +92,8 @@ export class UpdatePersonDTO {
   phoneNumber?: string;
 
   @IsOptional()
-  @IsString()
-  @Length(8, 32)
-  password?: string;
-
-  @IsOptional()
   @IsNotEmpty()
   @IsString()
   @MaxLength(50)
   address?: string;
-
-  @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  @MaxLength(25)
-  username?: string;
-
-  @IsOptional()
-  @IsEnum(PersonRole)
-  @IsOptional()
-  role?: PersonRole | null;
 }

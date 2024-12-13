@@ -5,22 +5,22 @@ import { PersonService } from "@person/service";
 const personRouter = Router();
 const personController = new PersonController(new PersonService());
 
+personRouter.get(
+  "/persons/:personId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    await personController.getPersonId(req, res, next);
+  },
+);
+
 personRouter.post(
-  "/person",
+  "/persons",
   async (req: Request, res: Response, next: NextFunction) => {
     await personController.createPerson(req, res, next);
   },
 );
 
-personRouter.get(
-  "/person/:personId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    await personController.getPerson(req, res, next);
-  },
-);
-
- personRouter.put(
-  "/person/:personId",
+personRouter.put(
+  "/persons",
   async (req: Request, res: Response, next: NextFunction) => {
     await personController.updatePersonInfo(req, res, next);
   },

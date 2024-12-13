@@ -52,9 +52,10 @@ export class PersonService {
   }
 
   async updatePerson(
-    personId: string,
     updateData: UpdatePersonDTO,
   ): Promise<ReadPersonDTO> {
+    const { personId } = updateData;
+
     return prisma.person.update({
       where: { personId },
       data: updateData,
