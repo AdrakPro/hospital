@@ -39,9 +39,10 @@ export class DoctorService {
   }
 
   async updateDoctor(
-    doctorId: string,
     updateData: UpdateDoctorDTO,
   ): Promise<ReadDoctorDTO> {
+    const { doctorId } = updateData;
+
     return this.db.doctor.update({
       where: { doctorId },
       data: updateData,

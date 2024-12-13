@@ -14,11 +14,7 @@ export class DoctorController {
   }
 
   async createDoctor(req: Request, res: Response, next: NextFunction) {
-    const { personId } = req.params;
-    const doctorDTO = plainToInstance(CreateDoctorDTO, {
-      ...req.body,
-      personId,
-    });
+    const doctorDTO = plainToInstance(CreateDoctorDTO, req.body);
     const errors = await validate(doctorDTO);
 
     if (errors.length > 0) {
@@ -65,7 +61,6 @@ export class DoctorController {
   }
 
   async updateDoctor(req: Request, res: Response, next: NextFunction) {
-    const { doctorId } = req.params;
     const updateDoctorDTO = plainToInstance(UpdateDoctorDTO, req.body);
     const errors = await validate(updateDoctorDTO);
 
@@ -74,12 +69,9 @@ export class DoctorController {
     }
 
     try {
-      const updatedDoctor = await this.doctorService.updateDoctor(
-        doctorId,
-        updateDoctorDTO,
-      );
+      const doctor = await this.doctorService.updateDoctor(updateDoctorDTO);
 
-      await sendSuccessResponse(res, SuccessCode.OK, { doctor: updatedDoctor });
+      await sendSuccessResponse(res, SuccessCode.OK, { doctor });
     } catch (e: any) {
       next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
     }

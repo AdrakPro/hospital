@@ -13,28 +13,28 @@ doctorRouter.get(
 );
 
 doctorRouter.get(
-  "/doctor/:doctorId",
+  "/doctors/:doctorId",
   async (req: Request, res: Response, next: NextFunction) => {
     await doctorController.getDoctorById(req, res, next);
   },
 );
 
 doctorRouter.post(
-  "/doctor/:personId",
+  "/doctors",
   async (req: Request, res: Response, next: NextFunction) => {
     await doctorController.createDoctor(req, res, next);
   },
 );
 
 doctorRouter.put(
-  "/doctor/:doctorId",
+  "/doctors",
   async (req: Request, res: Response, next: NextFunction) => {
     await doctorController.updateDoctor(req, res, next);
   },
 );
 
 doctorRouter.delete(
-  "/doctor/:doctorId",
+  "/doctors/:doctorId",
   async (req: Request, res: Response, next: NextFunction) => {
     await doctorController.deleteDoctor(req, res, next);
   },

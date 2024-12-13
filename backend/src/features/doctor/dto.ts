@@ -30,6 +30,10 @@ export class CreateDoctorDTO {
 
 export class UpdateDoctorDTO {
   @IsNotEmpty()
+  @IsUUID("4")
+  doctorId: string;
+
+  @IsNotEmpty()
   @IsOptional()
   @IsString()
   departmentId?: string;
