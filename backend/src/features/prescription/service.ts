@@ -16,7 +16,6 @@ export class PrescriptionService {
   async createPrescription(
     prescriptionDTO: CreatePrescriptionDTO,
   ): Promise<ReadPrescriptionDTO> {
-    console.log({ status: PrescriptionStatus.ACTIVE, ...prescriptionDTO });
     return this.db.prescription.create({
       data: { status: PrescriptionStatus.ACTIVE, ...prescriptionDTO },
     });
@@ -30,13 +29,15 @@ export class PrescriptionService {
     });
   }
 
-  async updatePrescription(
+  async patchPrescriptionStatus(
     prescriptionId: string,
     updateData: UpdatePrescriptionDTO,
   ): Promise<ReadPrescriptionDTO> {
     return this.db.prescription.update({
       where: { prescriptionId },
-      data: updateData,
+      data: {
+        status: updateData.status,
+      },
     });
   }
 

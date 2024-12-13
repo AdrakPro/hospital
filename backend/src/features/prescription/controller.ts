@@ -63,7 +63,7 @@ export class PrescriptionController {
     }
   }
 
-  async updatePrescription(req: Request, res: Response, next: NextFunction) {
+  async patchPrescription(req: Request, res: Response, next: NextFunction) {
     const { prescriptionId } = req.params;
     const updatePrescriptionDTO = plainToInstance(
       UpdatePrescriptionDTO,
@@ -76,14 +76,14 @@ export class PrescriptionController {
     }
 
     try {
-      const updatedPrescription =
-        await this.prescriptionService.updatePrescription(
+      const prescription =
+        await this.prescriptionService.patchPrescriptionStatus(
           prescriptionId,
           updatePrescriptionDTO,
         );
 
       await sendSuccessResponse(res, SuccessCode.OK, {
-        prescription: updatedPrescription,
+        prescription,
       });
     } catch (e: any) {
       next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));

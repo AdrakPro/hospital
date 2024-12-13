@@ -24,11 +24,11 @@ prescriptionRouter.get(
 prescriptionRouter.patch(
   "/prescription/:prescriptionId",
   async (req: Request, res: Response, next: NextFunction) => {
-    await prescriptionController.updatePrescription(req, res, next);
+    await prescriptionController.patchPrescription(req, res, next);
   },
 );
 
-prescriptionRouter.patch(
+prescriptionRouter.delete(
   "/prescription/:prescriptionId",
   async (req: Request, res: Response, next: NextFunction) => {
     await prescriptionController.deletePrescription(req, res, next);
