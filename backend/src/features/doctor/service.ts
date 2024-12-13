@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PersonRole, PrismaClient } from "@prisma/client";
 import prisma from "@db/prisma";
 import { CreateDoctorDTO, ReadDoctorDTO, UpdateDoctorDTO } from "@doctor/dto";
 
@@ -10,8 +10,15 @@ export class DoctorService {
   }
 
   async createDoctor(doctorDTO: CreateDoctorDTO): Promise<ReadDoctorDTO> {
-    return this.db.doctor.create({
-      data: doctorDTO,
+    return this.db.$transaction(async (tx) => {
+      await tx.person.update({
+        where: { personId: doctorDTO.personId },
+        data: { role: PersonRole.DOCTOR },
+      });
+
+      return tx.doctor.create({
+        data: doctorDTO,
+      });
     });
   }
 

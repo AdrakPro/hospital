@@ -8,8 +8,8 @@ export interface Doctor {
   departmentId?: string;
   specialization: string;
   room?: string;
-  workStart: Date;
-  workEnd: Date;
+  workStart: string;
+  workEnd: string;
   appointments: Appointment[];
   director?: Department;
   department?: Department;

@@ -1,6 +1,7 @@
 import {
   IsDate,
   IsDateString,
+  IsMilitaryTime,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -27,12 +28,12 @@ export class CreateDoctorDTO {
   room?: string;
 
   @IsNotEmpty()
-  @IsDateString()
-  workStart: Date;
+  @IsMilitaryTime()
+  workStart: string;
 
   @IsNotEmpty()
-  @IsDateString()
-  workEnd: Date;
+  @IsMilitaryTime()
+  workEnd: string;
 }
 
 export class UpdateDoctorDTO {
@@ -53,13 +54,13 @@ export class UpdateDoctorDTO {
 
   @IsNotEmpty()
   @IsOptional()
-  @IsDateString()
-  workStart?: Date;
+  @IsMilitaryTime()
+  workStart?: string;
 
   @IsNotEmpty()
   @IsOptional()
-  @IsDateString()
-  workEnd?: Date;
+  @IsMilitaryTime()
+  workEnd?: string;
 }
 
 export class DeleteDoctorDTO {
@@ -74,6 +75,6 @@ export class ReadDoctorDTO {
   departmentId: string | null;
   specialization: string;
   room: string | null;
-  workStart: Date;
-  workEnd: Date;
+  workStart: string;
+  workEnd: string;
 }
