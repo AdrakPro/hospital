@@ -37,7 +37,7 @@ export class DoctorController {
     try {
       const doctors = await this.doctorService.getAllDoctors();
 
-      if (doctors?.length === 0) {
+      if (doctors.length === 0) {
         next(new HttpException(ErrorCode.NOT_FOUND));
       }
 
