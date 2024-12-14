@@ -4,10 +4,7 @@ import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { CreateAuditLogDTO, DeleteAuditLogDTO } from "@auditLog/dto";
 import { ErrorCode, HttpException } from "@common/errors/httpException";
-import {
-  sendSuccessResponse,
-  SuccessCode,
-} from "@common/utils/sendSuccessResponse";
+import { sendSuccessResponse, SuccessCode } from "@common/utils/sendSuccessResponse";
 
 export class AuditLogController {
   private auditLogService: AuditLogService;
@@ -32,6 +29,22 @@ export class AuditLogController {
     }
   }
 
+  async getAllAuditLogs(req: Request, res: Response, next: NextFunction) {
+    const { personId } = req.params;
+
+    try {
+      const auditLog = await this.auditLogService.getAllAuditLogs(personId);
+
+      if (auditLog.length === 0) {
+        return next(new HttpException(ErrorCode.NOT_FOUND));
+      }
+
+      await sendSuccessResponse(res, SuccessCode.OK, { auditLog });
+    } catch (e: any) {
+      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+    }
+  }
+
   async getAuditLog(req: Request, res: Response, next: NextFunction) {
     const { logId } = req.params;
 
@@ -48,9 +61,10 @@ export class AuditLogController {
     }
   }
 
-  async deleteAuditLog(req: Request, res: Response, next: NextFunction) {
-    const { logId } = req.params;
-    const deleteAuditLogDTO = plainToInstance(DeleteAuditLogDTO, { logId });
+  async deleteOldLogs(req: Request, res: Response, next: NextFunction) {
+    const LOGS_TO_DELETE = 20;
+    const { personId } = req.params;
+    const deleteAuditLogDTO = plainToInstance(DeleteAuditLogDTO, { personId });
     const errors = await validate(deleteAuditLogDTO);
 
     if (errors.length > 0) {
@@ -58,7 +72,7 @@ export class AuditLogController {
     }
 
     try {
-      await this.auditLogService.deleteAuditLog(logId);
+      await this.auditLogService.deleteManyAuditLogs(personId, LOGS_TO_DELETE);
       await sendSuccessResponse(res, SuccessCode.NO_CONTENT);
     } catch (e: any) {
       next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));

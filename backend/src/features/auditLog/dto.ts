@@ -13,10 +13,6 @@ export class CreateAuditLogDTO {
   personId: string;
 
   @IsNotEmpty()
-  @IsDateString()
-  timestamp: Date;
-
-  @IsNotEmpty()
   @IsEnum(AuditAction)
   action: AuditAction;
 
@@ -28,13 +24,13 @@ export class CreateAuditLogDTO {
 export class DeleteAuditLogDTO {
   @IsNotEmpty()
   @IsUUID()
-  logId: string;
+  personId: string;
 }
 
 export class ReadAuditLogDTO {
   logId: string;
   personId: string;
-  timestamp: Date;
+  createdAt: Date;
   action: AuditAction;
   log: string;
 }

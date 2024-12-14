@@ -3,8 +3,8 @@ import { Person } from "@person/model";
 
 export interface AuditLog {
   logId: string;
-  userId: string;
-  timestamp: Date;
+  personId: string;
+  createdAt: Date;
   action: AuditAction;
   log: string;
   person: Person;

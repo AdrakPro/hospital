@@ -9,9 +9,7 @@ export class AuditLogService {
     this.db = db || prisma;
   }
 
-  async createAuditLog(
-    auditLogDTO: CreateAuditLogDTO,
-  ): Promise<ReadAuditLogDTO> {
+  async createAuditLog(auditLogDTO: CreateAuditLogDTO): Promise<ReadAuditLogDTO> {
     return this.db.auditLog.create({
       data: auditLogDTO,
     });
@@ -23,9 +21,30 @@ export class AuditLogService {
     });
   }
 
-  async deleteAuditLog(logId: string): Promise<void> {
-    await this.db.auditLog.delete({
-      where: { logId },
+  async getAllAuditLogs(personId: string): Promise<ReadAuditLogDTO[]> {
+    return this.db.auditLog.findMany({
+      where: { personId },
+    });
+  }
+
+
+  async deleteManyAuditLogs(personId: string, LOGS_TO_DELETE: number): Promise<void> {
+    const logs = await this.db.auditLog.findMany({
+      where: { personId },
+      take: LOGS_TO_DELETE,
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    const ids = logs.map((log) => log.logId);
+
+    await this.db.auditLog.deleteMany({
+      where: {
+        logId: {
+          in: ids,
+        },
+      },
     });
   }
 }

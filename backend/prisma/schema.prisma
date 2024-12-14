@@ -21,7 +21,7 @@ model Appointment {
 model AuditLog {
   logId     String      @id @default(uuid()) @map("log_id") @db.Uuid
   personId  String      @map("user_id") @db.Uuid
-  timestamp DateTime    @default(now()) @db.Timestamp(6)
+  createdAt DateTime    @default(now()) @db.Timestamp(6) @map("created_at")
   action    AuditAction
   log       String      @db.Text
   person    Person      @relation(fields: [personId], references: [personId], onDelete: NoAction, onUpdate: NoAction, map: "fk_audit_log_user_id")
