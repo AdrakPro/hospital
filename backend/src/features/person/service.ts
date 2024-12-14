@@ -20,7 +20,6 @@ export class PersonService {
       address: true,
       username: true,
       role: true,
-      auditLogs: true,
     };
   }
 
@@ -40,6 +39,12 @@ export class PersonService {
   async getPersonByUsername(username: string): Promise<ReadPersonDTO | null> {
     return this.db.person.findUnique({
       where: { username },
+      select: this.defaultSelect,
+    });
+  }
+
+  async getAllPersons(): Promise<ReadPersonDTO[]> {
+    return prisma.person.findMany({
       select: this.defaultSelect,
     });
   }

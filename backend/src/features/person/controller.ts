@@ -38,7 +38,21 @@ export class PersonController {
     }
   }
 
-  async getPersonId(req: Request, res: Response, next: NextFunction) {
+  async getAllPersons(req: Request, res: Response, next: NextFunction) {
+    try {
+      const persons = await this.personService.getAllPersons();
+
+      if (persons.length === 0) {
+        next(new HttpException(ErrorCode.NOT_FOUND));
+      }
+
+      await sendSuccessResponse(res, 200, { persons });
+    } catch (e: any) {
+      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+    }
+  }
+
+  async getPersonById(req: Request, res: Response, next: NextFunction) {
     const { personId } = req.params;
 
     try {

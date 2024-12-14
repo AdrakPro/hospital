@@ -6,9 +6,16 @@ const personRouter = Router();
 const personController = new PersonController(new PersonService());
 
 personRouter.get(
+  "/persons",
+  async (req: Request, res: Response, next: NextFunction) => {
+    await personController.getAllPersons(req, res, next);
+  },
+);
+
+personRouter.get(
   "/persons/:personId",
   async (req: Request, res: Response, next: NextFunction) => {
-    await personController.getPersonId(req, res, next);
+    await personController.getPersonById(req, res, next);
   },
 );
 
