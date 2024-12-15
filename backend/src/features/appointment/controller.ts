@@ -2,16 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import { AppointmentService } from "@appointment/service";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
-import {
-  CreateAppointmentDTO,
-  DeleteAppointmentDTO,
-  UpdateAppointmentDTO,
-} from "@appointment/dto";
-import { ErrorCode, HttpException } from "@common/errors/httpException";
-import {
-  sendSuccessResponse,
-  SuccessCode,
-} from "@common/utils/sendSuccessResponse";
+import { CreateAppointmentDTO, DeleteAppointmentDTO, UpdateAppointmentDTO } from "@appointment/dto";
+import { PrismaException } from "@common/errors/PrismaException";
+import { sendSuccessResponse, SuccessCode } from "@common/utils/sendSuccessResponse";
+import { BadRequestException } from "@common/errors/BadRequestException";
+import { APPOINTMENT_MODEL } from "@common/constants/modelName";
+import { NotFoundException } from "@common/errors/NotFoundException";
 
 export class AppointmentController {
   private appointmentService: AppointmentService;
@@ -30,7 +26,7 @@ export class AppointmentController {
     const errors = await validate(appointmentDTO);
 
     if (errors.length > 0) {
-      return next(new HttpException(ErrorCode.BAD_REQUEST, undefined, errors));
+      return next(new BadRequestException(APPOINTMENT_MODEL, errors));
     }
 
     try {
@@ -38,7 +34,7 @@ export class AppointmentController {
         await this.appointmentService.createAppointment(appointmentDTO);
       await sendSuccessResponse(res, SuccessCode.CREATED, { appointment });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 
@@ -50,12 +46,12 @@ export class AppointmentController {
         await this.appointmentService.getAppointmentById(appointmentId);
 
       if (!appointment) {
-        return next(new HttpException(ErrorCode.NOT_FOUND));
+        return next(new NotFoundException());
       }
 
       await sendSuccessResponse(res, SuccessCode.OK, { appointment });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 
@@ -68,7 +64,7 @@ export class AppointmentController {
     const errors = await validate(updateAppointmentDTO);
 
     if (errors.length > 0) {
-      return next(new HttpException(ErrorCode.BAD_REQUEST, undefined, errors));
+      return next(new BadRequestException(APPOINTMENT_MODEL, errors));
     }
 
     try {
@@ -81,7 +77,7 @@ export class AppointmentController {
         appointment: updatedAppointment,
       });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 
@@ -93,14 +89,14 @@ export class AppointmentController {
     const errors = await validate(deleteAppointmentDTO);
 
     if (errors.length > 0) {
-      return next(new HttpException(ErrorCode.BAD_REQUEST, undefined, errors));
+      return next(new BadRequestException(APPOINTMENT_MODEL, errors));
     }
 
     try {
       await this.appointmentService.deleteAppointment(appointmentId);
       await sendSuccessResponse(res, SuccessCode.NO_CONTENT);
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 }

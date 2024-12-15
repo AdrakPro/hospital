@@ -3,8 +3,11 @@ import { DoctorService } from "@doctor/service";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { CreateDoctorDTO, DeleteDoctorDTO, UpdateDoctorDTO } from "@doctor/dto";
-import { ErrorCode, HttpException } from "@common/errors/httpException";
+import { PrismaException } from "@common/errors/PrismaException";
 import { sendSuccessResponse, SuccessCode } from "@common/utils/sendSuccessResponse";
+import { BadRequestException } from "@common/errors/BadRequestException";
+import { DOCTOR_MODEL } from "@common/constants/modelName";
+import { NotFoundException } from "@common/errors/NotFoundException";
 
 export class DoctorController {
   private doctorService: DoctorService;
@@ -18,14 +21,14 @@ export class DoctorController {
     const errors = await validate(doctorDTO);
 
     if (errors.length > 0) {
-      return next(new HttpException(ErrorCode.BAD_REQUEST, undefined, errors));
+      return next(new BadRequestException(DOCTOR_MODEL, errors));
     }
 
     try {
       const doctor = await this.doctorService.createDoctor(doctorDTO);
       await sendSuccessResponse(res, SuccessCode.CREATED, { doctor });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 
@@ -34,12 +37,12 @@ export class DoctorController {
       const doctors = await this.doctorService.getAllDoctors();
 
       if (doctors.length === 0) {
-        next(new HttpException(ErrorCode.NOT_FOUND));
+        next(new NotFoundException());
       }
 
       await sendSuccessResponse(res, SuccessCode.OK, { doctors });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 
@@ -51,12 +54,12 @@ export class DoctorController {
       const doctor = await this.doctorService.getDoctorById(doctorId);
 
       if (!doctor) {
-        return next(new HttpException(ErrorCode.NOT_FOUND));
+        return next(new NotFoundException());
       }
 
       await sendSuccessResponse(res, SuccessCode.OK, { doctor });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 
@@ -65,7 +68,7 @@ export class DoctorController {
     const errors = await validate(updateDoctorDTO);
 
     if (errors.length > 0) {
-      return next(new HttpException(ErrorCode.BAD_REQUEST, undefined, errors));
+      return next(new BadRequestException(DOCTOR_MODEL, errors));
     }
 
     try {
@@ -73,7 +76,7 @@ export class DoctorController {
 
       await sendSuccessResponse(res, SuccessCode.OK, { doctor });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 
@@ -83,14 +86,14 @@ export class DoctorController {
     const errors = await validate(deleteDoctorDTO);
 
     if (errors.length > 0) {
-      return next(new HttpException(ErrorCode.BAD_REQUEST, undefined, errors));
+      return next(new BadRequestException(DOCTOR_MODEL, errors));
     }
 
     try {
       await this.doctorService.deleteDoctor(doctorId);
       await sendSuccessResponse(res, SuccessCode.NO_CONTENT);
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 }

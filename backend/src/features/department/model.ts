@@ -6,7 +6,7 @@ export interface Department {
   name: string;
   bedCount: number;
   patientCount: number;
-  doctorsCount: number;
+  doctorCount: number;
   directorId: string;
   director: Doctor;
   doctors: Doctor[];

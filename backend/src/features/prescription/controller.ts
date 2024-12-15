@@ -2,17 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import { PrescriptionService } from "@prescription/service";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
-import {
-  CreatePrescriptionDTO,
-  DeletePrescriptionDTO,
-  UpdatePrescriptionDTO,
-} from "@prescription/dto";
-import { ErrorCode, HttpException } from "@common/errors/httpException";
-import {
-  sendSuccessResponse,
-  SuccessCode,
-} from "@common/utils/sendSuccessResponse";
+import { CreatePrescriptionDTO, DeletePrescriptionDTO, UpdatePrescriptionDTO } from "@prescription/dto";
+import { PrismaException } from "@common/errors/PrismaException";
+import { sendSuccessResponse, SuccessCode } from "@common/utils/sendSuccessResponse";
 import { getExpirationDate, getIssueDate } from "@common/utils/time";
+import { NotFoundException } from "@common/errors/NotFoundException";
+import { BadRequestException } from "@common/errors/BadRequestException";
+import { PRESCRIPTION_MODEL } from "@common/constants/modelName";
 
 export class PrescriptionController {
   private prescriptionService: PrescriptionService;
@@ -34,7 +30,7 @@ export class PrescriptionController {
     const errors = await validate(prescriptionDTO);
 
     if (errors.length > 0) {
-      return next(new HttpException(ErrorCode.BAD_REQUEST, undefined, errors));
+      return next(new BadRequestException(PRESCRIPTION_MODEL, errors));
     }
 
     try {
@@ -42,7 +38,7 @@ export class PrescriptionController {
         await this.prescriptionService.createPrescription(prescriptionDTO);
       await sendSuccessResponse(res, SuccessCode.CREATED, { prescription });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 
@@ -54,12 +50,12 @@ export class PrescriptionController {
         await this.prescriptionService.getPrescriptionById(prescriptionId);
 
       if (!prescription) {
-        return next(new HttpException(ErrorCode.NOT_FOUND));
+        return next(new NotFoundException());
       }
 
       await sendSuccessResponse(res, SuccessCode.OK, { prescription });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 
@@ -72,7 +68,7 @@ export class PrescriptionController {
     const errors = await validate(updatePrescriptionDTO);
 
     if (errors.length > 0) {
-      return next(new HttpException(ErrorCode.BAD_REQUEST, undefined, errors));
+      return next(new BadRequestException(PRESCRIPTION_MODEL, errors));
     }
 
     try {
@@ -86,7 +82,7 @@ export class PrescriptionController {
         prescription,
       });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 
@@ -99,14 +95,14 @@ export class PrescriptionController {
     const errors = await validate(deletePrescriptionDTO);
 
     if (errors.length > 0) {
-      return next(new HttpException(ErrorCode.BAD_REQUEST, undefined, errors));
+      return next(new BadRequestException(PRESCRIPTION_MODEL, errors));
     }
 
     try {
       await this.prescriptionService.deletePrescription(prescriptionId);
       await sendSuccessResponse(res, SuccessCode.NO_CONTENT);
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 }

@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsString, IsUUID } from "class-validator";
+import { IsInt, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreateDepartmentDTO {
   @IsNotEmpty()
@@ -15,38 +15,52 @@ export class CreateDepartmentDTO {
 
   @IsNotEmpty()
   @IsInt()
-  doctorsCount: number;
+  doctorCount: number;
 
   @IsNotEmpty()
-  @IsUUID()
+  @IsUUID(4)
   directorId: string;
 }
 
 export class UpdateDepartmentDTO {
   @IsNotEmpty()
+  @IsUUID(4)
+  departmentId: string;
+
+  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  name: string;
+  name?: string;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsInt()
-  bedCount: number;
+  bedCount?: number;
+}
+
+export class DepartmentDoctorDTO {
+  @IsNotEmpty()
+  @IsUUID(4)
+  departmentId: string;
 
   @IsNotEmpty()
-  @IsInt()
-  patientCount: number;
+  @IsUUID(4)
+  doctorId: string;
+}
+
+export class DepartmentPatientDTO {
+  @IsNotEmpty()
+  @IsUUID(4)
+  departmentId: string;
 
   @IsNotEmpty()
-  @IsInt()
-  doctorsCount: number;
-
-  @IsNotEmpty()
-  @IsUUID()
-  directorId: string;
+  @IsUUID(4)
+  patientId: string;
 }
 
 export class DeleteDepartmentDTO {
   @IsNotEmpty()
-  @IsUUID()
+  @IsUUID(4)
   departmentId: string;
 }
 
@@ -55,6 +69,6 @@ export class ReadDepartmentDTO {
   name: string;
   bedCount: number;
   patientCount: number;
-  doctorsCount: number;
+  doctorCount: number;
   directorId: string;
 }

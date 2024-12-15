@@ -3,8 +3,11 @@ import { PersonService } from "@person/service";
 import { validate } from "class-validator";
 import { plainToInstance } from "class-transformer";
 import { CreatePersonDTO, UpdatePersonDTO } from "@person/dto";
-import { ErrorCode, HttpException } from "@common/errors/httpException";
+import { PrismaException } from "@common/errors/PrismaException";
 import { sendSuccessResponse } from "@common/utils/sendSuccessResponse";
+import { BadRequestException } from "@common/errors/BadRequestException";
+import { PERSON_MODEL } from "@common/constants/modelName";
+import { NotFoundException } from "@common/errors/NotFoundException";
 
 export class PersonController {
   private personService: PersonService;
@@ -19,22 +22,14 @@ export class PersonController {
     const errors = await validate(personDTO);
 
     if (errors.length > 0) {
-      next(new HttpException(ErrorCode.BAD_REQUEST, undefined, errors));
+      next(new BadRequestException(PERSON_MODEL, errors));
     }
 
     try {
-      const fetchedPerson = await this.personService.getPersonByUsername(personDTO.username);
-
-      if (fetchedPerson) {
-        next(new HttpException(ErrorCode.CONFLICT, "Duplicate username field."));
-
-        return null;
-      }
-
       const person = await this.personService.createPerson(personDTO);
       await sendSuccessResponse(res, 201, { person });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR));
+      next(new PrismaException(e));
     }
   }
 
@@ -43,12 +38,12 @@ export class PersonController {
       const persons = await this.personService.getAllPersons();
 
       if (persons.length === 0) {
-        next(new HttpException(ErrorCode.NOT_FOUND));
+        next(new NotFoundException());
       }
 
       await sendSuccessResponse(res, 200, { persons });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 
@@ -59,12 +54,12 @@ export class PersonController {
       const person = await this.personService.getPersonById(personId);
 
       if (!person) {
-        next(new HttpException(ErrorCode.NOT_FOUND));
+        next(new NotFoundException());
       }
 
       await sendSuccessResponse(res, 200, { person });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 
@@ -73,7 +68,7 @@ export class PersonController {
     const errors = await validate(personDTO);
 
     if (errors.length > 0) {
-      next(new HttpException(ErrorCode.BAD_REQUEST, undefined, errors));
+      next(new BadRequestException(PERSON_MODEL, errors));
     }
 
     try {
@@ -81,7 +76,7 @@ export class PersonController {
 
       await sendSuccessResponse(res, 200, { person });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 }

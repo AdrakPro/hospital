@@ -3,8 +3,11 @@ import { AuditLogService } from "@auditLog/service";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { CreateAuditLogDTO, DeleteAuditLogDTO } from "@auditLog/dto";
-import { ErrorCode, HttpException } from "@common/errors/httpException";
+import { PrismaException } from "@common/errors/PrismaException";
 import { sendSuccessResponse, SuccessCode } from "@common/utils/sendSuccessResponse";
+import { BadRequestException } from "@common/errors/BadRequestException";
+import { AUDIT_LOG_MODEL } from "@common/constants/modelName";
+import { NotFoundException } from "@common/errors/NotFoundException";
 
 export class AuditLogController {
   private auditLogService: AuditLogService;
@@ -18,14 +21,14 @@ export class AuditLogController {
     const errors = await validate(auditLogDTO);
 
     if (errors.length > 0) {
-      return next(new HttpException(ErrorCode.BAD_REQUEST, undefined, errors));
+      return next(new BadRequestException(AUDIT_LOG_MODEL, errors));
     }
 
     try {
       const auditLog = await this.auditLogService.createAuditLog(auditLogDTO);
       await sendSuccessResponse(res, SuccessCode.CREATED, { auditLog });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 
@@ -36,12 +39,12 @@ export class AuditLogController {
       const auditLog = await this.auditLogService.getAllAuditLogs(personId);
 
       if (auditLog.length === 0) {
-        return next(new HttpException(ErrorCode.NOT_FOUND));
+        return next(new NotFoundException());
       }
 
       await sendSuccessResponse(res, SuccessCode.OK, { auditLog });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 
@@ -52,12 +55,12 @@ export class AuditLogController {
       const auditLog = await this.auditLogService.getAuditLogById(logId);
 
       if (!auditLog) {
-        return next(new HttpException(ErrorCode.NOT_FOUND));
+        return next(new NotFoundException());
       }
 
       await sendSuccessResponse(res, SuccessCode.OK, { auditLog });
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 
@@ -68,14 +71,14 @@ export class AuditLogController {
     const errors = await validate(deleteAuditLogDTO);
 
     if (errors.length > 0) {
-      return next(new HttpException(ErrorCode.BAD_REQUEST, undefined, errors));
+      return next(new BadRequestException(AUDIT_LOG_MODEL, errors));
     }
 
     try {
       await this.auditLogService.deleteManyAuditLogs(personId, LOGS_TO_DELETE);
       await sendSuccessResponse(res, SuccessCode.NO_CONTENT);
     } catch (e: any) {
-      next(new HttpException(ErrorCode.INTERNAL_SERVER_ERROR, e.message));
+      next(new PrismaException(e));
     }
   }
 }
