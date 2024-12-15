@@ -1,5 +1,5 @@
-import { HttpException } from "@common/errors/httpException";
 import { NextFunction, Request, Response } from "express";
+import { HttpException } from "@common/errors/HttpException";
 
 export const errorMiddleware = (
   e: HttpException,
@@ -15,19 +15,13 @@ export const errorMiddleware = (
     message: e.message,
   };
 
-  if (e.errors) {
-    Object.assign(body, {
-      ...body,
-      errors: e.errors,
-    });
+  if (e.meta) {
+    Object.assign(body, { ...body, meta: e.meta });
   }
 
-  if (e.details) {
-    Object.assign(body, {
-      ...body,
-      details: e.details,
-    });
-  }
-
-  res.status(e.statusCode).json(body);
+  res.status(e.statusCode).json({
+    ...body,
+    meta: e.meta,
+    statusCode: e.statusCode,
+  });
 };
