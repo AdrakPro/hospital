@@ -58,6 +58,20 @@ export class DepartmentPatientDTO {
   patientId: string;
 }
 
+export class DepartmentTransferPatientDTO {
+  @IsNotEmpty()
+  @IsUUID(4)
+  newDepartmentId: string;
+
+  @IsNotEmpty()
+  @IsUUID(4)
+  oldDepartmentId: string;
+
+  @IsNotEmpty()
+  @IsUUID(4)
+  patientId: string;
+}
+
 export class DeleteDepartmentDTO {
   @IsNotEmpty()
   @IsUUID(4)

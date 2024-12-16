@@ -39,13 +39,13 @@ departmentRouter.put(
 );
 
 departmentRouter.post(
-  "/departments/patientr",
+  "/departments/patient",
   async (req: Request, res: Response, next: NextFunction) => {
     await departmentController.assignPatient(req, res, next);
   },
 );
 departmentRouter.post(
-  "/departments/doctors",
+  "/departments/doctor",
   async (req: Request, res: Response, next: NextFunction) => {
     await departmentController.assignDoctor(req, res, next);
   },
@@ -62,6 +62,13 @@ departmentRouter.delete(
   "/departments/:departmentId/patient/:patientId",
   async (req: Request, res: Response, next: NextFunction) => {
     await departmentController.unassignPatient(req, res, next);
+  },
+);
+
+departmentRouter.put(
+  "/departments/patient",
+  async (req: Request, res: Response, next: NextFunction) => {
+    await departmentController.transferPatient(req, res, next);
   },
 );
 

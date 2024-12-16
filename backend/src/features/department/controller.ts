@@ -7,6 +7,7 @@ import {
   DeleteDepartmentDTO,
   DepartmentDoctorDTO,
   DepartmentPatientDTO,
+  DepartmentTransferPatientDTO,
   UpdateDepartmentDTO,
 } from "@department/dto";
 import { PrismaException } from "@common/errors/PrismaException";
@@ -79,9 +80,7 @@ export class DepartmentController {
     }
 
     try {
-      const department = await this.departmentService.updateDepartment(
-        departmentDTO,
-      );
+      const department = await this.departmentService.updateDepartment(departmentDTO);
 
       await sendSuccessResponse(res, SuccessCode.OK, { department });
     } catch (e: any) {
@@ -108,7 +107,6 @@ export class DepartmentController {
     }
   }
 
-  // put
   async assignDirector(req: Request, res: Response, next: NextFunction) {
     const directorDTO = plainToInstance(DepartmentDoctorDTO, req.body);
     const errors = await validate(directorDTO);
@@ -123,7 +121,6 @@ export class DepartmentController {
     } catch (e: any) {
       next(new PrismaException(e));
     }
-
   }
 
   async assignDoctor(req: Request, res: Response, next: NextFunction) {
@@ -135,7 +132,8 @@ export class DepartmentController {
     }
 
     try {
-      const isDoctorAlreadyInDepartment = await this.departmentService.isDoctorAlreadyInDepartment(doctorDTO);
+      const isDoctorAlreadyInDepartment =
+        await this.departmentService.isDoctorAlreadyInDepartment(doctorDTO);
 
       if (isDoctorAlreadyInDepartment) {
         next(new AlreadyAssignedException(false));
@@ -157,7 +155,8 @@ export class DepartmentController {
     }
 
     try {
-      const isPatientAlreadyInDepartment = await this.departmentService.isPatientAlreadyInDepartment(patientDTO);
+      const isPatientAlreadyInDepartment =
+        await this.departmentService.isPatientAlreadyInDepartment(patientDTO);
 
       if (isPatientAlreadyInDepartment) {
         next(new AlreadyAssignedException(true));
@@ -165,7 +164,7 @@ export class DepartmentController {
 
       const department = await this.departmentService.getDepartmentById(patientDTO.departmentId);
 
-      if (department !== null && (department.patientCount > department.bedCount)) {
+      if (department !== null && department.patientCount > department.bedCount) {
         next(new FullDepartmentException());
       }
 
@@ -176,7 +175,6 @@ export class DepartmentController {
     }
   }
 
-
   async unassignDoctor(req: Request, res: Response, next: NextFunction) {
     const doctorDTO = plainToInstance(DepartmentDoctorDTO, req.params);
     const errors = await validate(doctorDTO);
@@ -186,7 +184,8 @@ export class DepartmentController {
     }
 
     try {
-      const isDoctorAlreadyInDepartment = await this.departmentService.isDoctorAlreadyInDepartment(doctorDTO);
+      const isDoctorAlreadyInDepartment =
+        await this.departmentService.isDoctorAlreadyInDepartment(doctorDTO);
 
       if (!isDoctorAlreadyInDepartment) {
         next(new NotFoundException());
@@ -208,12 +207,30 @@ export class DepartmentController {
     }
 
     try {
-      const isPatientAlreadyInDepartment = await this.departmentService.isPatientAlreadyInDepartment(patientDTO);
+      const isPatientAlreadyInDepartment =
+        await this.departmentService.isPatientAlreadyInDepartment(patientDTO);
       if (!isPatientAlreadyInDepartment) {
         next(new NotFoundException());
       }
 
       const department = await this.departmentService.removePatientFromDepartment(patientDTO);
+      await sendSuccessResponse(res, SuccessCode.OK, { department });
+    } catch (e: any) {
+      next(new PrismaException(e));
+    }
+  }
+
+  async transferPatient(req: Request, res: Response, next: NextFunction) {
+    const patientDTO = plainToInstance(DepartmentTransferPatientDTO, req.body);
+    const errors = await validate(patientDTO);
+
+    if (errors.length > 0) {
+      return next(new BadRequestException(DEPARTMENT_MODEL, errors));
+    }
+
+    try {
+      const department = await this.departmentService.transferPatient(patientDTO);
+
       await sendSuccessResponse(res, SuccessCode.OK, { department });
     } catch (e: any) {
       next(new PrismaException(e));

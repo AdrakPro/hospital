@@ -4,9 +4,11 @@ import {
   CreateDepartmentDTO,
   DepartmentDoctorDTO,
   DepartmentPatientDTO,
+  DepartmentTransferPatientDTO,
   ReadDepartmentDTO,
   UpdateDepartmentDTO,
 } from "@department/dto";
+import { ReadPatientDTO } from "@patient/dto";
 
 export class DepartmentService {
   private db: PrismaClient;
@@ -16,8 +18,17 @@ export class DepartmentService {
   }
 
   async createDepartment(departmentDTO: CreateDepartmentDTO): Promise<ReadDepartmentDTO> {
-    return this.db.department.create({
-      data: departmentDTO,
+    return this.db.$transaction(async (tx) => {
+      const department = await tx.department.create({
+        data: departmentDTO,
+      });
+
+      const departmentDoctorDTO = {
+        doctorId: department.directorId,
+        departmentId: department.departmentId,
+      };
+
+      return this.assignDirector(departmentDoctorDTO);
     });
   }
 
@@ -25,7 +36,8 @@ export class DepartmentService {
     return this.db.department.findMany();
   }
 
-  async getDepartmentById(departmentId: string, // add type in future
+  async getDepartmentById(
+    departmentId: string, // add type in future
   ): Promise<ReadDepartmentDTO | null> {
     return this.db.department.findUnique({
       where: { departmentId },
@@ -50,13 +62,13 @@ export class DepartmentService {
   async assignDoctor(doctorDTO: DepartmentDoctorDTO): Promise<ReadDepartmentDTO> {
     const { departmentId, doctorId } = doctorDTO;
 
-    return prisma.$transaction(async () => {
-      await this.db.doctor.update({
+    return prisma.$transaction(async (tx) => {
+      await tx.doctor.update({
         where: { doctorId },
         data: { departmentId },
       });
 
-      return this.db.department.update({
+      return tx.department.update({
         where: { departmentId },
         data: {
           doctorCount: {
@@ -70,13 +82,13 @@ export class DepartmentService {
   async assignPatient(patientDTO: DepartmentPatientDTO): Promise<ReadDepartmentDTO> {
     const { departmentId, patientId } = patientDTO;
 
-    return prisma.$transaction(async () => {
-      await this.db.patient.update({
+    return prisma.$transaction(async (tx) => {
+      await tx.patient.update({
         where: { patientId },
         data: { departmentId },
       });
 
-      return this.db.department.update({
+      return tx.department.update({
         where: { departmentId },
         data: {
           patientCount: {
@@ -111,22 +123,22 @@ export class DepartmentService {
   async assignDirector(directorDTO: DepartmentDoctorDTO): Promise<ReadDepartmentDTO> {
     const { departmentId, doctorId } = directorDTO;
 
-    return this.db.$transaction(async () => {
+    return this.db.$transaction(async (tx) => {
       await this.removePreviousDirector(departmentId);
 
-      const director = await this.db.doctor.update({
+      const director = await tx.doctor.update({
         where: { doctorId },
         data: { departmentId },
       });
 
-      await this.db.person.update({
+      await tx.person.update({
         where: { personId: director?.personId },
         data: {
           role: PersonRole.DIRECTOR,
         },
       });
 
-      return this.db.department.update({
+      return tx.department.update({
         where: { departmentId },
         data: {
           patientCount: {
@@ -155,16 +167,18 @@ export class DepartmentService {
     return doctor !== null;
   }
 
-  async removeDoctorFromDepartment(doctorDTO: DepartmentDoctorDTO): Promise<ReadDepartmentDTO | null> {
+  async removeDoctorFromDepartment(
+    doctorDTO: DepartmentDoctorDTO,
+  ): Promise<ReadDepartmentDTO | null> {
     const { doctorId, departmentId } = doctorDTO;
 
-    return prisma.$transaction(async () => {
-      await this.db.doctor.update({
+    return prisma.$transaction(async (tx) => {
+      await tx.doctor.update({
         where: { doctorId },
         data: { departmentId: null },
       });
 
-      return this.db.department.update({
+      return tx.department.update({
         where: { departmentId },
         data: {
           doctorCount: {
@@ -175,16 +189,18 @@ export class DepartmentService {
     });
   }
 
-  async removePatientFromDepartment(patientDTO: DepartmentPatientDTO): Promise<ReadDepartmentDTO | null> {
+  async removePatientFromDepartment(
+    patientDTO: DepartmentPatientDTO,
+  ): Promise<ReadDepartmentDTO | null> {
     const { patientId, departmentId } = patientDTO;
 
-    return prisma.$transaction(async () => {
-      await this.db.patient.update({
+    return prisma.$transaction(async (tx) => {
+      await tx.patient.update({
         where: { patientId },
-        data: { departmentId: null },
+        data: { departmentId: null, dateOfDischarge: new Date() },
       });
 
-      return this.db.department.update({
+      return tx.department.update({
         where: { departmentId },
         data: {
           patientCount: {
@@ -194,8 +210,32 @@ export class DepartmentService {
       });
     });
   }
+
+  async transferPatient(patientDTO: DepartmentTransferPatientDTO): Promise<ReadPatientDTO> {
+    const { patientId, oldDepartmentId, newDepartmentId } = patientDTO;
+
+    return this.db.$transaction(async (tx) => {
+      await tx.department.update({
+        where: { departmentId: oldDepartmentId },
+        data: {
+          patientCount: { decrement: 1 },
+        },
+      });
+
+      await tx.department.update({
+        where: { departmentId: newDepartmentId },
+        data: {
+          patientCount: { increment: 1 },
+        },
+      });
+
+      return tx.patient.update({
+        where: { patientId },
+        data: {
+          departmentId: newDepartmentId,
+          dateOfAdmission: new Date(),
+        },
+      });
+    });
+  }
 }
-
-
-
-
