@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { AppointmentStatus, PrismaClient } from "@prisma/client";
 import prisma from "@db/prisma";
 import { CreateAppointmentDTO, ReadAppointmentDTO, UpdateAppointmentDTO } from "@appointment/dto";
 
@@ -11,7 +11,10 @@ export class AppointmentService {
 
   async createAppointment(appointmentDTO: CreateAppointmentDTO): Promise<ReadAppointmentDTO> {
     return this.db.appointment.create({
-      data: appointmentDTO,
+      data: {
+        ...appointmentDTO,
+        status: AppointmentStatus.SCHEDULED,
+      },
     });
   }
 

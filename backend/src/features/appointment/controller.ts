@@ -8,7 +8,6 @@ import { sendSuccessResponse, SuccessCode } from "@common/utils/sendSuccessRespo
 import { BadRequestException } from "@common/errors/BadRequestException";
 import { APPOINTMENT_MODEL } from "@common/constants/modelName";
 import { NotFoundException } from "@common/errors/NotFoundException";
-import { AppointmentStatus } from "@prisma/client";
 
 export class AppointmentController {
   private appointmentService: AppointmentService;
@@ -18,10 +17,7 @@ export class AppointmentController {
   }
 
   async createAppointment(req: Request, res: Response, next: NextFunction) {
-    const appointmentDTO = plainToInstance(CreateAppointmentDTO, {
-      ...req.body,
-      status: AppointmentStatus.SCHEDULED,
-    });
+    const appointmentDTO = plainToInstance(CreateAppointmentDTO, req.body);
     const errors = await validate(appointmentDTO);
 
     if (errors.length > 0) {

@@ -13,10 +13,6 @@ export class CreateAppointmentDTO {
   date: Date;
 
   @IsNotEmpty()
-  @IsEnum(AppointmentStatus)
-  status: AppointmentStatus;
-
-  @IsNotEmpty()
   @IsUUID()
   doctorId: string;
 }
