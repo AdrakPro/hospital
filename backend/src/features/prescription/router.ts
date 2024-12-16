@@ -3,33 +3,38 @@ import { PrescriptionController } from "@prescription/controller";
 import { PrescriptionService } from "@prescription/service";
 
 const prescriptionRouter = Router();
-const prescriptionController = new PrescriptionController(
-  new PrescriptionService(),
-);
-
-prescriptionRouter.post(
-  "/appointment/:appointmentId/prescription",
-  async (req: Request, res: Response, next: NextFunction) => {
-    await prescriptionController.createPrescription(req, res, next);
-  },
-);
+const prescriptionController = new PrescriptionController(new PrescriptionService());
 
 prescriptionRouter.get(
-  "/prescription/:prescriptionId",
+  "/prescriptions/:prescriptionId",
   async (req: Request, res: Response, next: NextFunction) => {
     await prescriptionController.getPrescription(req, res, next);
   },
 );
 
-prescriptionRouter.patch(
-  "/prescription/:prescriptionId",
+prescriptionRouter.get(
+  "/patients/:patientId/prescriptions",
   async (req: Request, res: Response, next: NextFunction) => {
-    await prescriptionController.patchPrescription(req, res, next);
+    await prescriptionController.getAllPatientsPrescriptions(req, res, next);
+  },
+);
+
+prescriptionRouter.post(
+  "/prescriptions",
+  async (req: Request, res: Response, next: NextFunction) => {
+    await prescriptionController.createPrescription(req, res, next);
+  },
+);
+
+prescriptionRouter.put(
+  "/prescriptions",
+  async (req: Request, res: Response, next: NextFunction) => {
+    await prescriptionController.updatePrescription(req, res, next);
   },
 );
 
 prescriptionRouter.delete(
-  "/prescription/:prescriptionId",
+  "/prescriptions/:prescriptionId",
   async (req: Request, res: Response, next: NextFunction) => {
     await prescriptionController.deletePrescription(req, res, next);
   },

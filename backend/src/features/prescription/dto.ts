@@ -1,7 +1,6 @@
 import {
   ArrayNotEmpty,
   IsArray,
-  IsDateString,
   IsEnum,
   IsNotEmpty,
   IsOptional,
@@ -17,25 +16,29 @@ export class CreatePrescriptionDTO {
   drugs: string[];
 
   @IsNotEmpty()
-  @IsDateString()
-  issue: Date;
-
-  @IsNotEmpty()
-  @IsDateString()
-  expiration: Date;
-
   @IsOptional()
   @IsString()
   notes?: string;
 
-  @IsUUID("4")
+  @IsNotEmpty()
+  @IsUUID(4)
   appointmentId: string;
 }
 
 export class UpdatePrescriptionDTO {
   @IsNotEmpty()
+  @IsUUID(4)
+  prescriptionId: string;
+
+  @IsNotEmpty()
   @IsEnum(PrescriptionStatus)
   status: PrescriptionStatus;
+}
+
+export class DeletePrescriptionDTO {
+  @IsNotEmpty()
+  @IsUUID(4)
+  prescriptionId: string;
 }
 
 export class ReadPrescriptionDTO {
@@ -46,10 +49,4 @@ export class ReadPrescriptionDTO {
   status: PrescriptionStatus;
   notes: string | null;
   appointmentId: string;
-}
-
-export class DeletePrescriptionDTO {
-  @IsNotEmpty()
-  @IsUUID("4")
-  prescriptionId: string;
 }

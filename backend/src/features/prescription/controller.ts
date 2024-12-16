@@ -2,10 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import { PrescriptionService } from "@prescription/service";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
-import { CreatePrescriptionDTO, DeletePrescriptionDTO, UpdatePrescriptionDTO } from "@prescription/dto";
+import {
+  CreatePrescriptionDTO,
+  DeletePrescriptionDTO,
+  UpdatePrescriptionDTO,
+} from "@prescription/dto";
 import { PrismaException } from "@common/errors/PrismaException";
 import { sendSuccessResponse, SuccessCode } from "@common/utils/sendSuccessResponse";
-import { getExpirationDate, getIssueDate } from "@common/utils/time";
 import { NotFoundException } from "@common/errors/NotFoundException";
 import { BadRequestException } from "@common/errors/BadRequestException";
 import { PRESCRIPTION_MODEL } from "@common/constants/modelName";
@@ -18,15 +21,7 @@ export class PrescriptionController {
   }
 
   async createPrescription(req: Request, res: Response, next: NextFunction) {
-    const { appointmentId } = req.params;
-    const issue = getIssueDate();
-    const expiration = getExpirationDate(issue);
-    const prescriptionDTO = plainToInstance(CreatePrescriptionDTO, {
-      issue,
-      expiration,
-      appointmentId,
-      ...req.body,
-    });
+    const prescriptionDTO = plainToInstance(CreatePrescriptionDTO, req.body);
     const errors = await validate(prescriptionDTO);
 
     if (errors.length > 0) {
@@ -34,8 +29,7 @@ export class PrescriptionController {
     }
 
     try {
-      const prescription =
-        await this.prescriptionService.createPrescription(prescriptionDTO);
+      const prescription = await this.prescriptionService.createPrescription(prescriptionDTO);
       await sendSuccessResponse(res, SuccessCode.CREATED, { prescription });
     } catch (e: any) {
       next(new PrismaException(e));
@@ -46,8 +40,7 @@ export class PrescriptionController {
     const { prescriptionId } = req.params;
 
     try {
-      const prescription =
-        await this.prescriptionService.getPrescriptionById(prescriptionId);
+      const prescription = await this.prescriptionService.getPrescriptionById(prescriptionId);
 
       if (!prescription) {
         return next(new NotFoundException());
@@ -59,12 +52,24 @@ export class PrescriptionController {
     }
   }
 
-  async patchPrescription(req: Request, res: Response, next: NextFunction) {
-    const { prescriptionId } = req.params;
-    const updatePrescriptionDTO = plainToInstance(
-      UpdatePrescriptionDTO,
-      req.body,
-    );
+  async getAllPatientsPrescriptions(req: Request, res: Response, next: NextFunction) {
+    const { patientId } = req.params;
+
+    try {
+      const prescriptions = await this.prescriptionService.getAllPatientsPrescriptions(patientId);
+
+      if (!prescriptions) {
+        return next(new NotFoundException());
+      }
+
+      await sendSuccessResponse(res, SuccessCode.OK, { prescriptions });
+    } catch (e: any) {
+      next(new PrismaException(e));
+    }
+  }
+
+  async updatePrescription(req: Request, res: Response, next: NextFunction) {
+    const updatePrescriptionDTO = plainToInstance(UpdatePrescriptionDTO, req.body);
     const errors = await validate(updatePrescriptionDTO);
 
     if (errors.length > 0) {
@@ -73,10 +78,7 @@ export class PrescriptionController {
 
     try {
       const prescription =
-        await this.prescriptionService.patchPrescriptionStatus(
-          prescriptionId,
-          updatePrescriptionDTO,
-        );
+        await this.prescriptionService.updatePrescriptionStatus(updatePrescriptionDTO);
 
       await sendSuccessResponse(res, SuccessCode.OK, {
         prescription,
@@ -88,11 +90,8 @@ export class PrescriptionController {
 
   async deletePrescription(req: Request, res: Response, next: NextFunction) {
     const { prescriptionId } = req.params;
-    const deletePrescriptionDTO = plainToInstance(
-      DeletePrescriptionDTO,
-      prescriptionId,
-    );
-    const errors = await validate(deletePrescriptionDTO);
+    const prescriptionDTO = plainToInstance(DeletePrescriptionDTO, { prescriptionId });
+    const errors = await validate(prescriptionDTO);
 
     if (errors.length > 0) {
       return next(new BadRequestException(PRESCRIPTION_MODEL, errors));

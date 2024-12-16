@@ -5,6 +5,7 @@ import {
   ReadPrescriptionDTO,
   UpdatePrescriptionDTO,
 } from "@prescription/dto";
+import { getExpirationDate, getIssueDate } from "@common/utils/time";
 
 export class PrescriptionService {
   private db: PrismaClient;
@@ -13,30 +14,37 @@ export class PrescriptionService {
     this.db = db || prisma;
   }
 
-  async createPrescription(
-    prescriptionDTO: CreatePrescriptionDTO,
-  ): Promise<ReadPrescriptionDTO> {
+  async createPrescription(prescriptionDTO: CreatePrescriptionDTO): Promise<ReadPrescriptionDTO> {
+    const issue = getIssueDate();
+    const expiration = getExpirationDate(issue);
+
     return this.db.prescription.create({
-      data: { status: PrescriptionStatus.ACTIVE, ...prescriptionDTO },
+      data: { ...prescriptionDTO, status: PrescriptionStatus.ACTIVE, issue, expiration },
     });
   }
 
-  async getPrescriptionById(
-    prescriptionId: string,
-  ): Promise<ReadPrescriptionDTO | null> {
+  async getAllPatientsPrescriptions(patientId: string): Promise<ReadPrescriptionDTO[]> {
+    const appointments = await this.db.appointment.findMany({
+      where: { patientId },
+      include: { prescriptions: true },
+    });
+
+    return appointments.flatMap((appointment) => appointment.prescriptions);
+  }
+
+  async getPrescriptionById(prescriptionId: string): Promise<ReadPrescriptionDTO | null> {
     return this.db.prescription.findUnique({
       where: { prescriptionId },
     });
   }
 
-  async patchPrescriptionStatus(
-    prescriptionId: string,
-    updateData: UpdatePrescriptionDTO,
-  ): Promise<ReadPrescriptionDTO> {
+  async updatePrescriptionStatus(updateData: UpdatePrescriptionDTO): Promise<ReadPrescriptionDTO> {
+    const { prescriptionId, status } = updateData;
+
     return this.db.prescription.update({
       where: { prescriptionId },
       data: {
-        status: updateData.status,
+        status,
       },
     });
   }
