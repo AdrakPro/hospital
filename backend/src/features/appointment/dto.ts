@@ -1,10 +1,10 @@
 import { IsDateString, IsEnum, IsNotEmpty, IsOptional, IsUUID } from "class-validator";
 import { AppointmentStatus } from "@prisma/client";
-import { MinDate } from "@common/utils/customMinDecorator";
+import { MinDate } from "@common/validators/minDateValidator";
 
 export class CreateAppointmentDTO {
   @IsNotEmpty()
-  @IsUUID()
+  @IsUUid(4)
   patientId: string;
 
   @IsNotEmpty()
@@ -13,7 +13,7 @@ export class CreateAppointmentDTO {
   date: Date;
 
   @IsNotEmpty()
-  @IsUUID()
+  @IsUUid(4)
   doctorId: string;
 }
 
@@ -36,7 +36,7 @@ export class UpdateAppointmentDTO {
 
 export class DeleteAppointmentDTO {
   @IsNotEmpty()
-  @IsUUID()
+  @IsUUid(4)
   appointmentId: string;
 }
 

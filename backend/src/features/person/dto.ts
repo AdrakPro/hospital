@@ -1,6 +1,5 @@
 import {
   IsDateString,
-  IsEnum,
   IsNotEmpty,
   IsNumberString,
   IsOptional,
@@ -46,26 +45,11 @@ export class CreatePersonDTO {
   @IsString()
   @MaxLength(25)
   username: string;
-
-  @IsEnum(PersonRole)
-  @IsOptional()
-  role: PersonRole | null;
-}
-
-export class ReadPersonDTO {
-  personId: string;
-  name: string;
-  surname: string;
-  dateOfBirth: Date;
-  phoneNumber: string;
-  address: string;
-  username: string;
-  role: PersonRole | null;
 }
 
 export class UpdatePersonDTO {
   @IsNotEmpty()
-  @IsUUID("4")
+  @IsUUID(4)
   personId: string;
 
   @IsOptional()
@@ -96,4 +80,15 @@ export class UpdatePersonDTO {
   @IsString()
   @MaxLength(50)
   address?: string;
+}
+
+export class ReadPersonDTO {
+  personId: string;
+  name: string;
+  surname: string;
+  dateOfBirth: Date;
+  phoneNumber: string;
+  address: string;
+  username: string;
+  role: PersonRole | null;
 }

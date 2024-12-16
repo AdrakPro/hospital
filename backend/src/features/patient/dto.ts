@@ -1,9 +1,10 @@
 import { IsArray, IsDateString, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsValidPerson } from "@common/validators/personValidator";
+import { CreatePersonDTO } from "@person/dto";
 
 export class CreatePatientDTO {
-  @IsNotEmpty()
-  @IsUUID("4")
-  personId: string;
+  @IsValidPerson()
+  person: CreatePersonDTO;
 
   @IsNotEmpty()
   @IsDateString()
@@ -29,13 +30,13 @@ export class CreatePatientDTO {
 
   @IsNotEmpty()
   @IsOptional()
-  @IsUUID("4")
+  @IsUUID(4)
   departmentId?: string;
 }
 
 export class UpdatePatientDTO {
   @IsNotEmpty()
-  @IsUUID("4")
+  @IsUUID(4)
   patientId: string;
 
   @IsNotEmpty()
@@ -61,7 +62,7 @@ export class UpdatePatientDTO {
 
   @IsNotEmpty()
   @IsOptional()
-  @IsUUID("4")
+  @IsUUID(4)
   departmentId?: string;
 }
 
@@ -73,7 +74,6 @@ export class DeletePatientDTO {
 
 export class ReadPatientDTO {
   patientId: string;
-  personId: string;
   dateOfAdmission: Date;
   dateOfDischarge: Date | null;
   policyNumber: string;

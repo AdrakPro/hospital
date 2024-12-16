@@ -1,15 +1,9 @@
-import {
-  IsDateString,
-  IsEnum,
-  IsNotEmpty,
-  IsString,
-  IsUUID,
-} from "class-validator";
+import { IsEnum, IsNotEmpty, IsString, IsUUID } from "class-validator";
 import { AuditAction } from "@prisma/client";
 
 export class CreateAuditLogDTO {
   @IsNotEmpty()
-  @IsUUID()
+  @IsUUID(4)
   personId: string;
 
   @IsNotEmpty()
@@ -23,7 +17,7 @@ export class CreateAuditLogDTO {
 
 export class DeleteAuditLogDTO {
   @IsNotEmpty()
-  @IsUUID()
+  @IsUUID(4)
   personId: string;
 }
 

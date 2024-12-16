@@ -1,13 +1,14 @@
 import { IsMilitaryTime, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsValidPerson } from "@common/validators/personValidator";
+import { CreatePersonDTO } from "@person/dto";
 
 export class CreateDoctorDTO {
-  @IsNotEmpty()
-  @IsUUID("4")
-  personId: string;
+  @IsValidPerson()
+  person: CreatePersonDTO;
 
   @IsNotEmpty()
   @IsOptional()
-  @IsUUID("4")
+  @IsUUID(4)
   departmentId?: string;
 
   @IsNotEmpty()
@@ -30,7 +31,7 @@ export class CreateDoctorDTO {
 
 export class UpdateDoctorDTO {
   @IsNotEmpty()
-  @IsUUID("4")
+  @IsUUID(4)
   doctorId: string;
 
   @IsNotEmpty()
