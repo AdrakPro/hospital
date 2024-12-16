@@ -90,7 +90,7 @@ model Prescription {
   notes          String?            @db.Text
   status         PrescriptionStatus
   appointmentId  String             @map("appointment_id") @db.Uuid
-  appointment    Appointment        @relation(fields: [appointmentId], references: [appointmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_prescription_appointment_id")
+  appointment    Appointment        @relation(fields: [appointmentId], references: [appointmentId], onDelete: Cascade, onUpdate: NoAction, map: "fk_prescription_appointment_id")
 }
 
 enum PrescriptionStatus {
