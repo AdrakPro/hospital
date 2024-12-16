@@ -23,9 +23,7 @@ export class PersonService {
     };
   }
 
-  async createPerson(
-    personDTO: CreatePersonDTO,
-  ): Promise<CreatePersonDTO | null> {
+  async createPerson(personDTO: CreatePersonDTO): Promise<CreatePersonDTO | null> {
     const hashedPassword = await bcrypt.hash(personDTO.password, 10);
 
     return this.db.person.create({
@@ -56,9 +54,7 @@ export class PersonService {
     });
   }
 
-  async updatePerson(
-    updateData: UpdatePersonDTO,
-  ): Promise<ReadPersonDTO> {
+  async updatePerson(updateData: UpdatePersonDTO): Promise<ReadPersonDTO> {
     const { personId } = updateData;
 
     return prisma.person.update({

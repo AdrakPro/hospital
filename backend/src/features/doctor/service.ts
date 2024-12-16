@@ -11,13 +11,21 @@ export class DoctorService {
 
   async createDoctor(doctorDTO: CreateDoctorDTO): Promise<ReadDoctorDTO> {
     return this.db.$transaction(async (tx) => {
-      await tx.person.update({
-        where: { personId: doctorDTO.personId },
-        data: { role: PersonRole.DOCTOR },
+      const person = await tx.person.create({
+        data: {
+          ...doctorDTO.person,
+          role: PersonRole.DOCTOR,
+        },
       });
 
       return tx.doctor.create({
-        data: doctorDTO,
+        data: {
+          personId: person.personId,
+          specialization: doctorDTO.specialization,
+          room: doctorDTO.room,
+          workStart: doctorDTO.workStart,
+          workEnd: doctorDTO.workEnd,
+        },
       });
     });
   }
@@ -38,9 +46,7 @@ export class DoctorService {
     return this.db.doctor.findMany();
   }
 
-  async updateDoctor(
-    updateData: UpdateDoctorDTO,
-  ): Promise<ReadDoctorDTO> {
+  async updateDoctor(updateData: UpdateDoctorDTO): Promise<ReadDoctorDTO> {
     const { doctorId } = updateData;
 
     return this.db.doctor.update({

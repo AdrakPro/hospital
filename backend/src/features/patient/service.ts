@@ -11,13 +11,23 @@ export class PatientService {
 
   async createPatient(patientDTO: CreatePatientDTO): Promise<ReadPatientDTO> {
     return this.db.$transaction(async (tx) => {
-      await tx.person.update({
-        where: { personId: patientDTO.personId },
-        data: { role: PersonRole.PATIENT },
+      const person = await tx.person.create({
+        data: {
+          ...patientDTO.person,
+          role: PersonRole.PATIENT,
+        },
       });
 
       return tx.patient.create({
-        data: patientDTO,
+        data: {
+          personId: person.personId,
+          dateOfAdmission: patientDTO.dateOfAdmission,
+          dateOfDischarge: patientDTO.dateOfDischarge || null,
+          policyNumber: patientDTO.policyNumber,
+          conditions: patientDTO.conditions,
+          notes: patientDTO.notes || null,
+          departmentId: patientDTO.departmentId || null,
+        },
       });
     });
   }
@@ -33,9 +43,7 @@ export class PatientService {
     });
   }
 
-  async updatePatient(
-    updateData: UpdatePatientDTO,
-  ): Promise<ReadPatientDTO> {
+  async updatePatient(updateData: UpdatePatientDTO): Promise<ReadPatientDTO> {
     const { patientId } = updateData;
 
     return this.db.patient.update({
