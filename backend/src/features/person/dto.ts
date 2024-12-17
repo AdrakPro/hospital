@@ -91,4 +91,5 @@ export class ReadPersonDTO {
   address: string;
   username: string;
   role: PersonRole | null;
+  password?: string;
 }
