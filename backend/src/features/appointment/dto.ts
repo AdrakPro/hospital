@@ -4,7 +4,7 @@ import { MinDate } from "@common/validators/minDateValidator";
 
 export class CreateAppointmentDTO {
   @IsNotEmpty()
-  @IsUUid(4)
+  @IsUUID(4)
   patientId: string;
 
   @IsNotEmpty()
@@ -13,7 +13,7 @@ export class CreateAppointmentDTO {
   date: Date;
 
   @IsNotEmpty()
-  @IsUUid(4)
+  @IsUUID(4)
   doctorId: string;
 }
 
@@ -36,7 +36,7 @@ export class UpdateAppointmentDTO {
 
 export class DeleteAppointmentDTO {
   @IsNotEmpty()
-  @IsUUid(4)
+  @IsUUID(4)
   appointmentId: string;
 }
 

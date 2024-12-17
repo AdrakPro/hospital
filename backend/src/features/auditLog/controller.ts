@@ -32,17 +32,17 @@ export class AuditLogController {
     }
   }
 
-  async getAllAuditLogs(req: Request, res: Response, next: NextFunction) {
+  async getAllPersonAuditLogs(req: Request, res: Response, next: NextFunction) {
     const { personId } = req.params;
 
     try {
-      const auditLog = await this.auditLogService.getAllAuditLogs(personId);
+      const auditLogs = await this.auditLogService.getAllPersonAuditLogs(personId);
 
-      if (auditLog.length === 0) {
+      if (auditLogs.length === 0) {
         return next(new NotFoundException());
       }
 
-      await sendSuccessResponse(res, SuccessCode.OK, { auditLog });
+      await sendSuccessResponse(res, SuccessCode.OK, { auditLogs });
     } catch (e: any) {
       next(new PrismaException(e));
     }
@@ -77,6 +77,20 @@ export class AuditLogController {
     try {
       await this.auditLogService.deleteManyAuditLogs(personId, LOGS_TO_DELETE);
       await sendSuccessResponse(res, SuccessCode.NO_CONTENT);
+    } catch (e: any) {
+      next(new PrismaException(e));
+    }
+  }
+
+  async getAllAuditLogs(req: Request, res: Response, next: NextFunction) {
+    try {
+      const auditLogs = await this.auditLogService.getAllAuditLogs();
+
+      if (auditLogs.length === 0) {
+        return next(new NotFoundException());
+      }
+
+      await sendSuccessResponse(res, SuccessCode.OK, { auditLogs });
     } catch (e: any) {
       next(new PrismaException(e));
     }

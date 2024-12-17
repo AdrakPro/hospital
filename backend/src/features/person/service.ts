@@ -34,6 +34,12 @@ export class PersonService {
     });
   }
 
+  async getFullPersonByUsername(username: string): Promise<ReadPersonDTO | null> {
+    return this.db.person.findUnique({
+      where: { username },
+    });
+  }
+
   async getPersonByUsername(username: string): Promise<ReadPersonDTO | null> {
     return this.db.person.findUnique({
       where: { username },

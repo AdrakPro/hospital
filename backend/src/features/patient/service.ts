@@ -1,6 +1,7 @@
 import { PersonRole, PrismaClient } from "@prisma/client";
 import prisma from "@db/prisma";
 import { CreatePatientDTO, ReadPatientDTO, UpdatePatientDTO } from "@patient/dto";
+import { hashPassword } from "@common/auth/hashPassword";
 
 export class PatientService {
   private db: PrismaClient;
@@ -11,10 +12,13 @@ export class PatientService {
 
   async createPatient(patientDTO: CreatePatientDTO): Promise<ReadPatientDTO> {
     return this.db.$transaction(async (tx) => {
+      const password = await hashPassword(patientDTO.person.password);
+
       const person = await tx.person.create({
         data: {
           ...patientDTO.person,
           role: PersonRole.PATIENT,
+          password,
         },
       });
 

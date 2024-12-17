@@ -12,6 +12,10 @@ export class CreateAuditLogDTO {
 
   @IsNotEmpty()
   @IsString()
+  model: string;
+
+  @IsNotEmpty()
+  @IsString()
   log: string;
 }
 
@@ -24,6 +28,7 @@ export class DeleteAuditLogDTO {
 export class ReadAuditLogDTO {
   logId: string;
   personId: string;
+  model: string;
   createdAt: Date;
   action: AuditAction;
   log: string;

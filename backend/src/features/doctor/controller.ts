@@ -46,7 +46,6 @@ export class DoctorController {
     }
   }
 
-
   async getDoctorById(req: Request, res: Response, next: NextFunction) {
     const { doctorId } = req.params;
 
