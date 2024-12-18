@@ -32,6 +32,7 @@ export class CreatePersonDTO {
   @MaxLength(11)
   phoneNumber: string;
 
+  @IsNotEmpty()
   @IsString()
   @Length(8, 32)
   password: string;
@@ -43,7 +44,7 @@ export class CreatePersonDTO {
 
   @IsNotEmpty()
   @IsString()
-  @MaxLength(25)
+  @Length(5, 25)
   username: string;
 }
 

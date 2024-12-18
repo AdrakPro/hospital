@@ -1,6 +1,6 @@
 import { PersonRole, PrismaClient } from "@prisma/client";
-import prisma from "@db/prisma";
 import { CreateDoctorDTO, ReadDoctorDTO, UpdateDoctorDTO } from "@doctor/dto";
+import prisma from "@db/prisma";
 
 export class DoctorService {
   private db: PrismaClient;
