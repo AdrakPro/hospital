@@ -44,7 +44,7 @@ export class CreatePersonDTO {
 
   @IsNotEmpty()
   @IsString()
-  @Length(5, 25)
+  @Length(4, 25)
   username: string;
 }
 

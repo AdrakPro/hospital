@@ -17,12 +17,6 @@ class AuthController {
   }
 
   async login(req: Request, res: Response, next: NextFunction) {
-    const personId = personIdStore.getStore()?.personId;
-
-    if (personId) {
-      return next(new HttpException("User is already logged in.", 400));
-    }
-
     const loginDTO = plainToInstance(LoginDTO, req.body);
     const errors = await validate(loginDTO);
 
@@ -33,9 +27,6 @@ class AuthController {
     try {
       const result = await this.authService.login(req.body);
 
-      personIdStore.run({ personId: result.personId }, () => {
-        console.log("AsyncLocalStorage initialized with personId:", result.personId);
-      });
       await sendSuccessResponse(res, 200, result);
     } catch (e: any) {
       next(new HttpException(e.message, 400));
@@ -43,12 +34,6 @@ class AuthController {
   }
 
   async logout(req: Request, res: Response, next: NextFunction) {
-    const personId = personIdStore.getStore()?.personId;
-
-    if (!personId) {
-      return next(new HttpException("User is not logged in.", 400));
-    }
-
     personIdStore.run({ personId: undefined }, () => {
       console.log("Logged out.");
     });

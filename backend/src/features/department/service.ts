@@ -41,6 +41,10 @@ export class DepartmentService {
   ): Promise<ReadDepartmentDTO | null> {
     return this.db.department.findUnique({
       where: { departmentId },
+      include: {
+        patients: true,
+        doctors: true,
+      },
     });
   }
 

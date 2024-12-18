@@ -8,7 +8,7 @@ const departmentController = new DepartmentController(new DepartmentService());
 
 departmentRouter.get(
   "/departments",
-  authMiddleware([]),
+  authMiddleware([Role.ADMIN]),
   async (req: Request, res: Response, next: NextFunction) => {
     await departmentController.getAllDepartments(req, res, next);
   },
