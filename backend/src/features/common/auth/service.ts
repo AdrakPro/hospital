@@ -1,40 +1,38 @@
 import bcrypt from "bcryptjs";
-import * as jose from "jose";
-import { ReadPersonDTO } from "@person/dto";
+import jwt from "jsonwebtoken";
+import { LoginDTO } from "@auth/dto";
+import prisma from "@db/prisma";
+import { AuthException } from "@common/errors/AuthException";
 
-const SECRET = new TextEncoder().encode("YOUR_SECRET_KEY");
-const ALGORITHM = "HS256";
-const EXPIRATION_TIME = "2h";
+const JWT_SECRET = process.env.JWT_SECRET || "mega";
+const JWT_EXPIRATION = "1h";
 
 class AuthService {
-  async login(person: ReadPersonDTO | null, password: string) {
-    if (person?.password === undefined) {
-      return { isValid: false };
+  async login(loginDto: LoginDTO) {
+    const { username, password } = loginDto;
+
+    const person = await prisma.person.findUnique({ where: { username } });
+
+    if (!person) {
+      throw new AuthException("Invalid username or password.");
     }
 
-    const match = await bcrypt.compare(password, person.password);
+    const isPasswordValid = await bcrypt.compare(password, person.password);
 
-    if (!match) {
-      return { isValid: false, jwt: null };
+    if (!isPasswordValid) {
+      throw new AuthException("Invalid username or password.");
     }
 
-    const jwt = await new jose.SignJWT({
-      user: { id: person.personId, username: person.username },
-    })
-      .setProtectedHeader({ alg: ALGORITHM })
-      .setIssuedAt()
-      .setExpirationTime(EXPIRATION_TIME)
-      .sign(SECRET);
-    return { isValid: true, jwt };
-  }
+    const payload = {
+      personId: person.personId,
+      role: person.role,
+    };
 
-  async verifyToken(jwt: string) {
-    try {
-      const { payload } = await jose.jwtVerify(jwt, SECRET);
-      return { isValid: true, payload };
-    } catch (error) {
-      return { isValid: false, payload: null };
-    }
+    const token = jwt.sign(payload, JWT_SECRET, {
+      expiresIn: JWT_EXPIRATION,
+    });
+
+    return { token, role: person.role, personId: person.personId };
   }
 }
 

@@ -25,6 +25,7 @@ export default defineConfig({
       "@department": path.resolve(__dirname, "./src/features/department"),
       "@auditLog": path.resolve(__dirname, "./src/features/auditLog"),
       "@appointment": path.resolve(__dirname, "./src/features/appointment"),
+      "@auth": path.resolve(__dirname, "./src/features/common/auth"),
     },
   },
 });
