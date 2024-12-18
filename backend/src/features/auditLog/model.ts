@@ -5,6 +5,7 @@ export interface AuditLog {
   logId: string;
   personId: string;
   createdAt: Date;
+  model: string;
   action: AuditAction;
   log: string;
   person: Person;

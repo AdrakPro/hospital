@@ -21,12 +21,15 @@ export class AuditLogService {
     });
   }
 
-  async getAllAuditLogs(personId: string): Promise<ReadAuditLogDTO[]> {
+  async getAllAuditLogs(): Promise<ReadAuditLogDTO[]> {
+    return this.db.auditLog.findMany();
+  }
+
+  async getAllPersonAuditLogs(personId: string): Promise<ReadAuditLogDTO[]> {
     return this.db.auditLog.findMany({
       where: { personId },
     });
   }
-
 
   async deleteManyAuditLogs(personId: string, LOGS_TO_DELETE: number): Promise<void> {
     const logs = await this.db.auditLog.findMany({

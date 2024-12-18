@@ -23,6 +23,7 @@ model AuditLog {
   personId  String      @map("user_id") @db.Uuid
   createdAt DateTime    @default(now()) @map("created_at") @db.Timestamp(6)
   action    AuditAction
+  model     String
   log       String      @db.Text
   person    Person      @relation(fields: [personId], references: [personId], onDelete: NoAction, onUpdate: NoAction, map: "fk_audit_log_user_id")
 }
@@ -106,7 +107,7 @@ enum AppointmentStatus {
 }
 
 enum AuditAction {
-  INSERT
+  CREATE
   UPDATE
   DELETE
   GET
@@ -116,4 +117,5 @@ enum PersonRole {
   PATIENT
   DOCTOR
   DIRECTOR
+  ADMIN
 }
