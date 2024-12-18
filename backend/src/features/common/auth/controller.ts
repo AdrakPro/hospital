@@ -1,56 +1,62 @@
-import Service from "@common/auth/service";
-import { PersonService } from "@person/service";
 import { NextFunction, Request, Response } from "express";
-import { sendSuccessResponse, SuccessCode } from "@common/utils/sendSuccessResponse";
-import { AuthException } from "@common/errors/AuthException";
-import { PrismaException } from "@common/errors/PrismaException";
+import AuthService from "@auth/service";
+import { plainToInstance } from "class-transformer";
+import { LoginDTO } from "@auth/dto";
+import { validate } from "class-validator";
+import { BadRequestException } from "@common/errors/BadRequestException";
+import { AUTH_MODEL } from "@common/constants/modelName";
 import { HttpException } from "@common/errors/HttpException";
+import { sendSuccessResponse } from "@common/utils/sendSuccessResponse";
+import { personIdStore } from "@common/middlewares/authMiddleware";
 
 class AuthController {
-  private authService: Service;
-  private personService: PersonService;
+  private authService: AuthService;
 
-  constructor(authService: Service, personService: PersonService) {
+  constructor(authService: AuthService) {
     this.authService = authService;
-    this.personService = personService;
   }
 
   async login(req: Request, res: Response, next: NextFunction) {
+    const personId = personIdStore.getStore()?.personId;
+
+    if (personId) {
+      return next(new HttpException("User is already logged in.", 400));
+    }
+
+    const loginDTO = plainToInstance(LoginDTO, req.body);
+    const errors = await validate(loginDTO);
+
+    if (errors.length > 0) {
+      return next(new BadRequestException(AUTH_MODEL, errors));
+    }
+
     try {
-      if (req.cookies.auth_token) {
-        return next(new HttpException("User is already logged in.", 400));
-      }
+      const result = await this.authService.login(req.body);
 
-      const { username, password } = req.body;
-      const person = await this.personService.getFullPersonByUsername(username);
-      const { isValid, jwt } = await this.authService.login(person, password);
-
-      if (!isValid) {
-        return next(new AuthException("Invalid username or password."));
-      }
-
-      res.cookie("auth_token", jwt, {
-        httpOnly: true, // Makes the cookie accessible only to the server
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 2 * 60 * 60 * 1000,
+      personIdStore.run({ personId: result.personId }, () => {
+        console.log("AsyncLocalStorage initialized with personId:", result.personId);
       });
-
-      await sendSuccessResponse(res, SuccessCode.OK, { jwt });
+      await sendSuccessResponse(res, 200, result);
     } catch (e: any) {
-      next(new PrismaException(e));
+      next(new HttpException(e.message, 400));
     }
   }
 
   async logout(req: Request, res: Response, next: NextFunction) {
-    try {
-      if (!req.cookies.auth_token) {
-        return next(new AuthException("User is not logged in."));
-      }
+    const personId = personIdStore.getStore()?.personId;
 
-      res.clearCookie("auth_token");
-      await sendSuccessResponse(res, SuccessCode.OK, { message: "Logged out successfully" });
+    if (!personId) {
+      return next(new HttpException("User is not logged in.", 400));
+    }
+
+    personIdStore.run({ personId: undefined }, () => {
+      console.log("Logged out.");
+    });
+
+    try {
+      await sendSuccessResponse(res, 200);
     } catch (e: any) {
-      next(new HttpException(e.message, 500));
+      next(new HttpException(e.message, 400));
     }
   }
 }

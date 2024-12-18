@@ -6,16 +6,8 @@ import patientRouter from "@patient/router";
 import auditLogRouter from "@auditLog/router";
 import departmentRouter from "@department/router";
 import appointmentRouter from "@appointment/router";
-import authMiddleware from "@common/middlewares/authMiddleware";
-import AuthService from "@common/auth/service";
-
-const auth = new authMiddleware(new AuthService());
 
 const mainRouter = express.Router();
-
-mainRouter.use("/api", async (req: Request, res: Response, next: NextFunction) => {
-  await auth.authorize(req, res, next);
-});
 
 mainRouter.use(
   "/api",

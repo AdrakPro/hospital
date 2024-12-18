@@ -1,34 +1,51 @@
-import AuthService from "@common/auth/service";
 import { NextFunction, Request, Response } from "express";
-import { HttpException } from "@common/errors/HttpException";
+import jwt from "jsonwebtoken";
+import { UnauthorizedException } from "@common/errors/UnauthorizedException";
+import { ForbiddenException } from "@common/errors/ForbiddenException";
+import { AsyncLocalStorage } from "async_hooks";
 
-class AuthMiddleware {
-  private authService: AuthService;
+const JWT_SECRET = process.env.JWT_SECRET || "mega";
 
-  constructor(authService: AuthService) {
-    this.authService = authService;
-  }
+export const personIdStore = new AsyncLocalStorage<{ personId: string | undefined }>();
 
-  async authorize(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { authorization } = req.headers;
-      if (!authorization) {
-        return next(new HttpException("Unauthorized", 401));
-      }
-      const [bearer, token] = authorization.split(" ");
-      if (bearer !== "Bearer") {
-        return next(new HttpException("Unauthorized", 401));
-      }
-      const { isValid } = await this.authService.verifyToken(token);
+export const authMiddleware = (allowedRoles: Role[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const token = req.headers.authorization?.split(" ")[1];
 
-      if (!isValid) {
-        return next(new HttpException("Unauthorized", 401));
-      }
-      next();
-    } catch (e: any) {
-      next(new HttpException(e.message, 500));
+    if (!token) {
+      return next(new UnauthorizedException());
     }
-  }
-}
 
-export default AuthMiddleware;
+    try {
+      const payload: any = jwt.verify(token, JWT_SECRET);
+      const { role, personId } = payload;
+
+      if (role === Role.ADMIN) {
+        savePersonId(personId, next);
+        return;
+      }
+
+      if (!allowedRoles.includes(role)) {
+        return next(new ForbiddenException());
+      }
+
+      savePersonId(personId, next);
+    } catch (e: any) {
+      next(new UnauthorizedException());
+    }
+  };
+};
+
+const savePersonId = (personId: string, next: NextFunction) => {
+  personIdStore.run({ personId }, () => {
+    console.log("AsyncLocalStorage initialized with personId:", personId);
+    next();
+  });
+};
+
+export enum Role {
+  ADMIN = "ADMIN",
+  PATIENT = "PATIENT",
+  DOCTOR = "DOCTOR",
+  DIRECTOR = "DIRECTOR",
+}
