@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Appointment {
+  appointmentId String            @id @default(uuid()) @map("appointment_id") @db.Uuid
+  patientId     String            @map("patient_id") @db.Uuid
+  date          DateTime          @db.Timestamp(6)
+  status        AppointmentStatus
+  doctorId      String            @map("doctor_id") @db.Uuid
+  doctor        Doctor            @relation(fields: [doctorId], references: [doctorId], onDelete: NoAction, onUpdate: NoAction, map: "fk_appointment_doctor_id")
+  patient       Patient           @relation(fields: [patientId], references: [patientId], onDelete: NoAction, onUpdate: NoAction, map: "fk_appointment_patient_id")
+  prescriptions Prescription[]
+}
+
+model AuditLog {
+  logId     String      @id @default(uuid()) @map("log_id") @db.Uuid
+  personId  String      @map("user_id") @db.Uuid
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamp(6)
+  action    AuditAction
+  model     String
+  log       String      @db.Text
+  person    Person      @relation(fields: [personId], references: [personId], onDelete: NoAction, onUpdate: NoAction, map: "fk_audit_log_user_id")
+}
+
+model Department {
+  departmentId String    @id @default(uuid()) @map("department_id") @db.Uuid
+  name         String    @db.VarChar
+  bedCount     Int       @map("bed_count")
+  patientCount Int       @map("patient_count")
+  doctorCount  Int       @map("doctor_count")
+  directorId   String    @unique @map("director_id") @db.Uuid
+  director     Doctor    @relation("departmentDirector", fields: [directorId], references: [doctorId], onDelete: NoAction, onUpdate: NoAction, map: "fk_department_director_id")
+  doctors      Doctor[]  @relation("departmentDoctors")
+  patients     Patient[]
+}
+
+model Doctor {
+  doctorId       String        @id @default(uuid()) @map("doctor_id") @db.Uuid
+  personId       String        @unique @map("person_id") @db.Uuid
+  departmentId   String?       @map("department_id") @db.Uuid
+  specialization String        @db.VarChar
+  room           String?       @db.VarChar
+  workStart      String        @map("work_start") @db.VarChar(5)
+  workEnd        String        @map("work_end") @db.VarChar(5)
+  appointments   Appointment[]
+  director       Department?   @relation("departmentDirector")
+  department     Department?   @relation("departmentDoctors", fields: [departmentId], references: [departmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_doctor_department_id")
+  person         Person        @relation(fields: [personId], references: [personId], onDelete: Cascade, onUpdate: NoAction, map: "fk_doctor_person_id")
+}
+
+model Patient {
+  patientId       String        @id @default(uuid()) @map("patient_id") @db.Uuid
+  personId        String        @unique @map("person_id") @db.Uuid
+  dateOfAdmission DateTime      @map("date_of_admission") @db.Date
+  dateOfDischarge DateTime?     @map("date_of_discharge") @db.Date
+  policyNumber    String        @map("policy_number") @db.VarChar
+  conditions      String[]
+  notes           String?       @db.Text
+  departmentId    String?       @map("department_id") @db.Uuid
+  appointments    Appointment[]
+  department      Department?   @relation(fields: [departmentId], references: [departmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_patient_department_id")
+  person          Person        @relation(fields: [personId], references: [personId], onDelete: Cascade, onUpdate: NoAction, map: "fk_patient_person_id")
+}
+
+model Person {
+  personId    String      @id @default(uuid()) @map("person_id") @db.Uuid
+  name        String      @db.VarChar
+  surname     String      @db.VarChar
+  dateOfBirth DateTime    @map("date_of_birth") @db.Date
+  phoneNumber String      @map("phone_number") @db.Char(12)
+  address     String      @db.VarChar
+  username    String      @unique @map("username") @db.VarChar
+  password    String      @map("password_hash") @db.VarChar
+  role        PersonRole?
+  auditLogs   AuditLog[]
+  doctor      Doctor?
+  patient     Patient?
+}
+
+model Prescription {
+  prescriptionId String             @id @default(uuid()) @map("prescription_id") @db.Uuid
+  drugs          String[]           @db.VarChar
+  issue          DateTime           @db.Date
+  expiration     DateTime           @db.Date
+  notes          String?            @db.Text
+  status         PrescriptionStatus
+  appointmentId  String             @map("appointment_id") @db.Uuid
+  appointment    Appointment        @relation(fields: [appointmentId], references: [appointmentId], onDelete: Cascade, onUpdate: NoAction, map: "fk_prescription_appointment_id")
+}
+
+enum PrescriptionStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CANCELED
+  COMPLETED
+  NO_SHOW
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  GET
+}
+
+enum PersonRole {
+  PATIENT
+  DOCTOR
+  DIRECTOR
+  ADMIN
+}
