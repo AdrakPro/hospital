@@ -1,4 +1,6 @@
 import { Person } from "@person/model";
+import { Appointment } from "@appointment/model";
+import { Department } from "@department/model";
 
 export interface Patient {
   patientId: string;
