@@ -1,2 +1,17 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script lang="ts">
+    import type { PageData } from './$types';
+    // export let data: JakisModel[];
+
+    let { data }: { data: PageData } = $props();
+    console.log(data)
+    const { user } = data;
+    console.log(user)
+</script>
+<!-- moze podswietlac na czerwono bo typow nie dodawalem -->
+<!--usera bedziesz musial zapisac w aplikacji, uzyj np svelte store -->
+<h1>Data from API:</h1>
+<ul>
+  <li>Token: {user.data.token}</li>
+  <li>Role: {user.data.role}</li>
+  <li>PersonId: {user.data.personId}</li>
+</ul>
