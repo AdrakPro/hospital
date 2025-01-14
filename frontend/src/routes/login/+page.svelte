@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { user } from '$lib/stores/user';
-    import { fetchData } from '$lib/utils/api';
+    import { fetchDataLogin } from '$lib/utils/api';
     import { BASE_URL } from '$lib/constants.ts';
 
     let username = '';
@@ -10,14 +10,14 @@
 
     const handleLogin = async () => {
         try {
-            const response = await fetchData(`${BASE_URL}/login`, 'POST', { username, password });
+            const response = await fetchDataLogin(`${BASE_URL}/login`, 'POST', { username, password });
             user.set(response.user);
             if (response.user.role === 'ADMIN') {
-                goto(`${BASE_URL}/admin`);
+                goto('/admin');
             } else if (response.user.role === 'DOCTOR') {
-                goto(`${BASE_URL}/doctor`);
+                goto('/doctor');
             } else {
-                goto(`${BASE_URL}/patient`);
+                goto('/patient');
             }
         } catch (e) {
             error = e.message || 'Invalid username or password';

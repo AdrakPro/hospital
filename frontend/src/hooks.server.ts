@@ -1,5 +1,4 @@
 import type { Handle } from '@sveltejs/kit';
-
 export const handle: Handle = async ({ event, resolve }) => {
     const user = event.locals.user; // Extracted from session/cookies
 
@@ -17,3 +16,5 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     return resolve(event);
 };
+
+// do poprawy
