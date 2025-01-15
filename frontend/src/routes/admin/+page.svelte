@@ -21,6 +21,8 @@
 <button on:click={() => goto('/admin/departments')}>Departments</button>
 <button on:click={() => goto('/admin/patients')}>Patients</button>
 <button on:click={() => goto('/admin/prescriptions')}>Prescriptions</button>
+<button on:click={() => goto('/admin/appointments')}>Appointments</button>
+<button on:click={() => goto('/admin/auditlogs')}>Logs</button>
 
 <section>
     <h2>Departments</h2>

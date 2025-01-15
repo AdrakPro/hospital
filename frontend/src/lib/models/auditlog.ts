@@ -12,7 +12,7 @@ export interface AuditLog {
 
 export enum AuditAction {
     CREATE = "CREATE",
-        UPDATE = "UPDATE",
-        DELETE = "DELETE",
-        GET = "GET"
+    UPDATE = "UPDATE",
+    DELETE = "DELETE",
+    GET = "GET"
 }

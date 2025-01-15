@@ -16,9 +16,10 @@
                 goto('/admin');
             } else if (response.user.role === 'DOCTOR') {
                 goto('/doctor');
-            } else {
+            } else if (response.user.role === 'PATIENT') {
                 goto('/patient');
-            }
+            } else
+                goto('/director');
         } catch (e) {
             error = e.message || 'Invalid username or password';
         }
