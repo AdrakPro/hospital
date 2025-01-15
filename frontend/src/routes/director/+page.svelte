@@ -18,8 +18,7 @@
         }
 
         const departments = await fetchData<Department[]>(`${BASE_URL}/departments`);
-        const foundDepartment = departments.find(department => department.directorId === loggedInDoctor.personId);
-
+        const foundDepartment = departments.find(department => department.director.personId === loggedInDoctor.personId);
         if (foundDepartment) {
             directorDepartment.set(foundDepartment);
         } else {
