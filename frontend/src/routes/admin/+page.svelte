@@ -16,9 +16,11 @@
 
 <h1>Admin Dashboard</h1>
 
+<button on:click={() => goto('/admin/persons')}>Persons</button>
 <button on:click={() => goto('/admin/doctors')}>Doctors</button>
 <button on:click={() => goto('/admin/departments')}>Departments</button>
 <button on:click={() => goto('/admin/patients')}>Patients</button>
+<button on:click={() => goto('/admin/prescriptions')}>Prescriptions</button>
 
 <section>
     <h2>Departments</h2>
