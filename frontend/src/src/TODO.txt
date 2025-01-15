@@ -1,0 +1,19 @@
+Jak zaczac?
+Backend jest napisany, musisz sobie skonfigurowac postresql na kompie i do folderu backend dodac plik .env z zawartoscia:
+DATABASE_URL="postgresql://admin:<haslo>@localhost:5432/hospital?schema=public"
+PORT=7000
+JWT_SECRET="maslo"
+
+Odpalasz w backendzie npm install, npx prisma generate, a potem npm run dev, backend dziala, mozesz robic requesty rest api.
+W frontendzie npm install, a potem npm run build, npm run dev wyswietla strone
+
+Na pewno musisz zfetchowac kazdego get endpointa, zalezne od strony itd
+
+
+Co do zrobienia:
+1. Dodac wszystkie typy (modele) z backendu
+2. Autoryzacja (fetche do /login)
+2. Panel poczatkowy do logowania
+3. Panel glowny
+4. powinien sie pokazywac error na ekranie jezeli byl blad, np unauthorized
+
